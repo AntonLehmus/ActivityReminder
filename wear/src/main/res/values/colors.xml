@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="teal_default" type="color">#64FFDA</item>
+
+
+    <integer-array name="activity_colors">
+        <item>@color/teal_default</item>
+    </integer-array>
+</resources>

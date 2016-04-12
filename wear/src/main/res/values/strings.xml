@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ActivityReminder</string>
+    <string name="startReminder">Start activity reminder</string>
+    <string name="startedReminder">Activity reminder started!</string>
+    <string name="stopReminder">Stop activity reminder</string>
+    <string name="stoppedReminder">Activity reminder stopped!</string>
+    <string name="notification_title_default">Take a break!</string>
+    <string name="notification_text_default">Keep your blood flowing</string>
+</resources>

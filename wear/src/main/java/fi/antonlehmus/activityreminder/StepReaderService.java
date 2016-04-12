@@ -14,35 +14,60 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.Calendar;
+
 public class StepReaderService extends Service implements SensorEventListener {
+
+    private final int DEBUG_INTERVAL = 30;
 
     public static final int REQUEST_CODE = 931;
 
     private final String LOG_TAG ="StepReaderService";
     private final String SAVED_STEPS ="saved_steps";
     private final String PERSISTENT_STEPS = "persistent_steps" ;
-    private final float DEFAULT_STEP_COUNT_TRIGGER = 10;
-    private final int DEFAULT_INTERVAL = 1;
+    private final String CYCLE_START_TIME = "cycle_start_time" ;
+    private final float DEFAULT_STEP_COUNT_TRIGGER = 15;
+    private final int DEFAULT_INTERVAL = 15                                                                                                                                                                                     ; //15-20min vaikutti hyvältä
+    private final long DEFAULT_CYCLE_TIME = 3600000; //60min in milliseconds
+    private final int DEFAULT_SILENT_START = 20;
+    private final int DEFAULT_SILENT_STOP = 8;
 
 
-    private float steps;
-    private float oldSteps;
+    private float steps = 0;
+    private float oldSteps = 0;
+    private long time_since_cycle_start = 0;
+    private long last_cycle_time = 0;
 
-    private AlarmManager scheduler;
-    private Intent intentHelper;
-    private PendingIntent scheduledIntent;
+    private AlarmManager scheduler = null;
+    private Intent intentHelper = null;
+    private static PendingIntent scheduledIntent = null;
 
 
     private SensorManager sensorManager = null;
     private Sensor sensor = null;
+    private Calendar calendarSilentStart = null;
+    private Calendar calendarSilentStop = null;
+
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        //read steps from last time
+        //read steps from last time and cycle running time
         SharedPreferences sharedPref =  getSharedPreferences(PERSISTENT_STEPS, Context.MODE_PRIVATE);
-        oldSteps = sharedPref.getFloat(SAVED_STEPS,oldSteps);
+        oldSteps = sharedPref.getFloat(SAVED_STEPS,0);
+        last_cycle_time = sharedPref.getLong(CYCLE_START_TIME, 0);
+        time_since_cycle_start = System.currentTimeMillis()-last_cycle_time;
 
+        calendarSilentStart = Calendar.getInstance();
+        calendarSilentStart.set(Calendar.HOUR_OF_DAY, DEFAULT_SILENT_START);
+        calendarSilentStart.set(Calendar.MINUTE,0);
+
+        calendarSilentStop = Calendar.getInstance();
+        calendarSilentStop.set(Calendar.HOUR_OF_DAY, DEFAULT_SILENT_STOP);
+        calendarSilentStop.set(Calendar.MINUTE,0);
+
+        Log.d(LOG_TAG,"cycle has been running "+(time_since_cycle_start/60000)+" minutes");
 
         //set AlarmManager
         scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -65,19 +90,38 @@ public class StepReaderService extends Service implements SensorEventListener {
         Log.d(LOG_TAG, "steps updated " + steps);
         Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
 
-        if(steps-oldSteps>DEFAULT_STEP_COUNT_TRIGGER){
-            setAlarm(2);
+        //silent hours
+        if(System.currentTimeMillis()> calendarSilentStart.getTimeInMillis()){
+            scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),calendarSilentStop.getTimeInMillis(), scheduledIntent);
+        }
+        else if(steps-oldSteps>DEFAULT_STEP_COUNT_TRIGGER || time_since_cycle_start>DEFAULT_CYCLE_TIME){
+            setAlarm(DEBUG_INTERVAL);
+            startNewCycle();
         }
         else{
             setAlarm(DEFAULT_INTERVAL);
         }
 
-        SharedPreferences sharedPref =  getSharedPreferences(PERSISTENT_STEPS, Context.MODE_PRIVATE);
+        sensorManager.unregisterListener(this);
+    }
+
+    private void startNewCycle(){
+        SharedPreferences sharedPref = getSharedPreferences(PERSISTENT_STEPS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putFloat(SAVED_STEPS, steps);
+        editor.putLong(CYCLE_START_TIME, System.currentTimeMillis());
         editor.commit();
 
-        sensorManager.unregisterListener(this);
+        if(steps-oldSteps<DEFAULT_STEP_COUNT_TRIGGER){
+            notifyUser();
+        }
+
+        Log.d(LOG_TAG,"New cycle started!");
+    }
+
+    private void notifyUser(){
+        Intent notifyIntent = new Intent(this, notifyUser.class);
+        startService(notifyIntent);
     }
 
     @Override
@@ -129,6 +173,10 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     private long minuteToMilliSecond(int min){
         return 60000*min;
+    }
+
+    public static PendingIntent getScheduledIntent(){
+        return scheduledIntent;
     }
 
 }
