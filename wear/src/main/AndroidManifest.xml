@@ -26,6 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Needed to create success/failure animations -->
         <activity
             android:name="android.support.wearable.activity.ConfirmationActivity">
         </activity>
@@ -38,9 +40,18 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".notifyUser"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="fi.antonlehmus.activityreminde.notifyUser" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".StepReaderService"
             android:exported="false" />
+
 
     </application>
 

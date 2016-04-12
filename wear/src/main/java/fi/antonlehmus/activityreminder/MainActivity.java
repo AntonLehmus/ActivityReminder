@@ -85,7 +85,6 @@ public class MainActivity extends Activity  {
                 getString(R.string.stoppedReminder));
         startActivity(animationIntent);
 
-
         alarmSet=false;
     }
 

@@ -100,6 +100,9 @@ public class StepReaderService extends Service implements SensorEventListener {
         }
         else{
             setAlarm(DEFAULT_INTERVAL);
+
+            //FOR DEBUGGING
+            notifyUser();
         }
 
         sensorManager.unregisterListener(this);
@@ -120,8 +123,9 @@ public class StepReaderService extends Service implements SensorEventListener {
     }
 
     private void notifyUser(){
-        Intent notifyIntent = new Intent(this, notifyUser.class);
-        startService(notifyIntent);
+        Intent notifyIntent = new Intent();
+        notifyIntent.setAction("fi.antonlehmus.activityreminde.notifyUser");
+        sendBroadcast(notifyIntent);
     }
 
     @Override
@@ -178,5 +182,6 @@ public class StepReaderService extends Service implements SensorEventListener {
     public static PendingIntent getScheduledIntent(){
         return scheduledIntent;
     }
+
 
 }

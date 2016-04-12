@@ -2,27 +2,29 @@ package fi.antonlehmus.activityreminder;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
+import android.util.Log;
 
-/**
- * Created by Anton on 11.4.2016.
- */
+
 public class notifyUser extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        createNotification(context);
-    }
-
-    public void createNotification(Context context){
 
         Bitmap bitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(context.getResources().getColor(R.color.teal_default));
+
+
+        //FOR DEBUG
+        float steps;
+        SharedPreferences sharedPref =  context.getSharedPreferences("persistent_steps", Context.MODE_PRIVATE);
+        steps = sharedPref.getFloat("saved_steps",0);
+        //
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
@@ -55,4 +57,5 @@ public class notifyUser extends WakefulBroadcastReceiver {
         // Builds the notification and issues it.
         mNotifyMgr.notify(mNotificationId, mBuilder.build());
     }
+
 }
