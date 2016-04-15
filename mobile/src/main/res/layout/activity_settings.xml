@@ -42,16 +42,11 @@
     <include layout="@layout/step_trigger_count"/>
 
     <!-- to fill space -->
-    <FrameLayout
-        android:id="@+id/space_filler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        >
-    </FrameLayout>
+    <include layout="@layout/space_filler"/>
 
     <!--Buttons-->
-    <include layout="@layout/start_stop_buttons"/>
+    <!--Implement later -->
+    <!--<include layout="@layout/start_stop_buttons"/>-->
 
     <!--Add placeholder-->
     <include layout="@layout/adds"/>

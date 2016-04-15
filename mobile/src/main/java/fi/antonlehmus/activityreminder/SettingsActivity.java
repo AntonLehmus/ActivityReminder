@@ -13,6 +13,8 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 
+import static fi.antonlehmus.activityreminder.R.id.silentStop;
+
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
@@ -36,7 +38,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
     public void startReminder(View view){
 
-
     }
     public void stopReminder(View view){
 
@@ -59,7 +60,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             TextView tv = (TextView) getActivity().findViewById(R.id.silentStart);
-            tv.setText(hourOfDay+":"+minute);
+            if(minute<10){
+                tv.setText(hourOfDay + ":0" + minute);
+            }
+            else {
+                tv.setText(hourOfDay + ":" + minute);
+            }
         }
     }
 
@@ -80,7 +86,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             TextView tv = (TextView) getActivity().findViewById(R.id.silentStop);
-            tv.setText(hourOfDay+":"+minute);
+            if(minute<10){
+                tv.setText(hourOfDay + ":0" + minute);
+            }
+            else {
+                tv.setText(hourOfDay + ":" + minute);
+            }
         }
     }
 }
