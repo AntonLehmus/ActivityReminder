@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">AvtivityReminder</string>
+    <string name="app_name">ActivityReminder</string>
+    <string name="resume_on_reboot">Resume on reboot</string>
+    <string name="silent_hours">Silent hours</string>
+    <string name="start_at">Start at</string>
+    <string name="stop_at">Stop at</string>
+    <string name="steps_considered_as_active">Steps considered as active</string>
+    <string name="startReminder">Start activity reminder</string>
+    <string name="stopReminder">Stop activity reminder</string>
+    <string name="remind_every">Remind every</string>
+    <string name="minutes">minutes</string>
 </resources>

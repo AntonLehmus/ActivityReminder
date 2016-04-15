@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import android.util.Log;
+
 
 
 public class notifyUser extends WakefulBroadcastReceiver {
@@ -18,13 +18,6 @@ public class notifyUser extends WakefulBroadcastReceiver {
 
         Bitmap bitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(context.getResources().getColor(R.color.teal_default));
-
-
-        //FOR DEBUG
-        float steps;
-        SharedPreferences sharedPref =  context.getSharedPreferences("persistent_steps", Context.MODE_PRIVATE);
-        steps = sharedPref.getFloat("saved_steps",0);
-        //
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)

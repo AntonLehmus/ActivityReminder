@@ -100,9 +100,6 @@ public class StepReaderService extends Service implements SensorEventListener {
         }
         else{
             setAlarm(DEFAULT_INTERVAL);
-
-            //FOR DEBUGGING
-            notifyUser();
         }
 
         sensorManager.unregisterListener(this);
@@ -113,7 +110,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putFloat(SAVED_STEPS, steps);
         editor.putLong(CYCLE_START_TIME, System.currentTimeMillis());
-        editor.commit();
+        editor.apply();
 
         if(steps-oldSteps<DEFAULT_STEP_COUNT_TRIGGER){
             notifyUser();
@@ -182,6 +179,5 @@ public class StepReaderService extends Service implements SensorEventListener {
     public static PendingIntent getScheduledIntent(){
         return scheduledIntent;
     }
-
 
 }

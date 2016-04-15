@@ -48,6 +48,12 @@ public class MainActivity extends Activity  {
 
 
     public void startReminder(View view){
+
+        if(StepReaderService.getScheduledIntent() != null){
+            alarmSet=true;
+        }
+
+
         if(!alarmSet) {
 
             AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

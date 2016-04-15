@@ -6,4 +6,6 @@
     <string name="stoppedReminder">Activity reminder stopped!</string>
     <string name="notification_title_default">Take a break!</string>
     <string name="notification_text_default">Keep your blood flowing</string>
+    <string name="notification_text_steps1_default">You have taken</string>
+    <string name="notification_text_steps2_default">steps</string>
 </resources>
