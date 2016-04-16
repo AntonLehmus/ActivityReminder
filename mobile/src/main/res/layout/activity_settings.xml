@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:theme="@android:style/Theme.Material.Light"
     android:layout_width="match_parent"
@@ -11,45 +11,32 @@
     android:orientation="vertical"
     tools:context="fi.antonlehmus.activityreminder.SettingsActivity">
 
-    <!--Resume on boot -->
-    <Switch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/resume_on_reboot"
-        android:textSize="@dimen/label_text_size"
-        android:switchMinWidth="56dp"
-        android:id="@+id/resumeOnBoot"
-        android:layout_marginBottom="@dimen/activity_vertical_margin" />
 
-    <!--Silent hours label-->
-    <TextView
+    <fragment android:name="fi.antonlehmus.activityreminder.SettingsFragment"
+        android:id="@+id/list"
+        android:layout_weight="1"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/label_text_size"
-        android:text="@string/silent_hours"
+        android:text="@string/btn_sync_to_wear"
         />
 
-    <!--Silent hours start-->
-    <include layout="@layout/silent_hours_start"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="MAINOS"
+            android:textSize="30sp"
+            android:background="@color/colorPrimaryDark"
+            />
 
-    <!--Silent hours stop-->
-    <include layout="@layout/silent_hours_stop"/>
-
-    <!--Remind interval-->
-    <include layout="@layout/remind_interval"/>
-
-    <!--Step trigger count-->
-    <include layout="@layout/step_trigger_count"/>
-
-    <!-- to fill space -->
-    <include layout="@layout/space_filler"/>
-
-    <!--Buttons-->
-    <!--Implement later -->
-    <!--<include layout="@layout/start_stop_buttons"/>-->
-
-    <!--Add placeholder-->
-    <include layout="@layout/adds"/>
-
-
+    </FrameLayout>
 </LinearLayout>
