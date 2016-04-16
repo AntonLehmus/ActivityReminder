@@ -23,6 +23,7 @@
         android:layout_gravity="center"
         android:layout_height="wrap_content"
         android:text="@string/btn_sync_to_wear"
+        android:onClick="syncToWear"
         />
 
     <FrameLayout
