@@ -102,6 +102,7 @@ public class SettingsActivity extends AppCompatActivity
 
     public void btnSyncToWear(View view){
         syncToWear();
+        Toast.makeText(this,R.string.synced_to_wear, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -127,6 +128,12 @@ public class SettingsActivity extends AppCompatActivity
             Log.d(TAG,"connected to wear. Trying to send.");
 
             PutDataMapRequest putDataMapRequest = PutDataMapRequest.create("/preferences");
+
+            //DEBUG
+            putDataMapRequest.getDataMap().putLong("time_stamp",System.currentTimeMillis());
+            Log.d(TAG,"timestamp:"+System.currentTimeMillis());
+            //END DEBUG
+
             putDataMapRequest.getDataMap().putBoolean(REBOOT_KEY, resumeOnReboot);
             putDataMapRequest.getDataMap().putLong(SILENT_START_KEY, silent_start);
             putDataMapRequest.getDataMap().putLong(SILENT_STOP_KEY, silent_stop);
