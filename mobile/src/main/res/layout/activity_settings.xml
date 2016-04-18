@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,24 +8,17 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
     tools:context="fi.antonlehmus.activityreminder.SettingsActivity">
 
     <fragment class="fi.antonlehmus.activityreminder.SettingsFragment"
         android:id="@+id/settings_fragment"
-        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-
-    <!-- Space filler -->
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/btnSync"/>
 
     <Button
+        android:id="@+id/btnSync"
         android:layout_margin="@dimen/activity_vertical_margin"
         android:layout_width="wrap_content"
         android:gravity="center"
@@ -33,14 +26,15 @@
         android:layout_height="wrap_content"
         android:text="@string/btn_sync_to_wear"
         android:onClick="btnSyncToWear"
-        android:layout_below="@+id/adds"
+        android:layout_above="@+id/adds"
+        android:layout_centerInParent="true"
         />
 
     <FrameLayout
         android:id="@+id/adds"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentBottom="true">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -53,4 +47,4 @@
 
     </FrameLayout>
 
-</LinearLayout>
+</RelativeLayout>

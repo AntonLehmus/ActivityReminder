@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:key="resume_on_boot"
+        android:key="@string/key_resume_on_boot"
         android:title="@string/resume_on_reboot"
         android:summary="@string/resume_on_reboot_summary"
         android:defaultValue="true"
@@ -10,21 +10,21 @@
         android:title="@string/silent_hours">
         <!--defaultValue = 20:00 in milliseconds -->
         <fi.antonlehmus.activityreminder.TimePreference
-            android:key="silent_start"
+            android:key="@string/key_silent_start"
             android:title="@string/start_at"
             android:defaultValue="72000000"
             android:persistent="true"
             />
         <!--defaultValue = 08:00 in milliseconds -->
         <fi.antonlehmus.activityreminder.TimePreference
-            android:key="silent_stop"
+            android:key="@string/key_silent_stop"
             android:title="@string/stop_at"
             android:defaultValue="28800000"
             android:persistent="true"
             />
     </PreferenceCategory>
     <EditTextPreference
-        android:key="remind_interval"
+        android:key="@string/key_remind_interval"
         android:summary="@string/remind_interval_summary"
         android:title="@string/reminder_interval"
         android:defaultValue="60"
@@ -33,7 +33,7 @@
         android:maxLength="3"
         />
     <EditTextPreference
-        android:key="step_trigger"
+        android:key="@string/key_step_trigger"
         android:summary="@string/steps_considered_as_active"
         android:title="@string/step_count"
         android:defaultValue="15"
