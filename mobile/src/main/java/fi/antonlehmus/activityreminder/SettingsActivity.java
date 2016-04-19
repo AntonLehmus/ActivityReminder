@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -90,6 +91,12 @@ public class SettingsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        mHandler = new Handler();
+        mDataItemList = (ListView) findViewById(R.id.data_item_list);
+
+        // Stores DataItems received by the local broadcaster or from the paired watch.
+        mDataItemListAdapter = new DataItemAdapter(this, android.R.layout.simple_list_item_1);
+        mDataItemList.setAdapter(mDataItemListAdapter);
 
         mGeneratorExecutor = new ScheduledThreadPoolExecutor(1);
 
@@ -112,13 +119,11 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mDataItemGeneratorFuture.cancel(true /* mayInterruptIfRunning */);
     }
 
     @Override
@@ -134,7 +139,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //ConnectionCallbacks
     public void onConnected(Bundle connectionHint) {
-        LOGD(TAG, "Google API Client was connected");
+        Log.d(TAG, "Google API Client was connected");
         mResolvingError = false;
         Wearable.DataApi.addListener(mGoogleApiClient, this);
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
@@ -143,7 +148,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //ConnectionCallbacks
     public void onConnectionSuspended(int cause) {
-        LOGD(TAG, "Connection to Google API client was suspended");
+        Log.d(TAG, "Connection to Google API client was suspended");
     }
 
     @Override //OnConnectionFailedListener
@@ -170,7 +175,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //DataListener
     public void onDataChanged(DataEventBuffer dataEvents) {
-        LOGD(TAG, "onDataChanged: " + dataEvents);
+        Log.d(TAG, "onDataChanged: " + dataEvents);
         // Need to freeze the dataEvents so they will exist later on the UI thread
         final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
         runOnUiThread(new Runnable() {
@@ -191,7 +196,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //MessageListener
     public void onMessageReceived(final MessageEvent messageEvent) {
-        LOGD(TAG, "onMessageReceived() A message from watch was received:" + messageEvent
+        Log.d(TAG, "onMessageReceived() A message from watch was received:" + messageEvent
                 .getRequestId() + " " + messageEvent.getPath());
         mHandler.post(new Runnable() {
             @Override
@@ -204,7 +209,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //NodeListener
     public void onPeerConnected(final Node peer) {
-        LOGD(TAG, "onPeerConnected: " + peer);
+        Log.d(TAG, "onPeerConnected: " + peer);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -216,7 +221,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //NodeListener
     public void onPeerDisconnected(final Node peer) {
-        LOGD(TAG, "onPeerDisconnected: " + peer);
+        Log.d(TAG, "onPeerDisconnected: " + peer);
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -225,6 +230,60 @@ public class SettingsActivity extends AppCompatActivity implements
         });
     }
 
+    private class DataItemGenerator implements Runnable {
+
+        @Override
+        public void run() {
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplication());
+            boolean resumeOnReboot = sharedPref.getBoolean(getString(R.string.key_resume_on_boot), true);
+            long silent_start = sharedPref.getLong(getString(R.string.key_silent_start), 72000000);
+            long silent_stop = sharedPref.getLong(getString(R.string.key_silent_stop), 28800000);
+            int remind_interval = Integer.valueOf(sharedPref.getString(getString(R.string.key_remind_interval), "60"));
+            int step_trigger = Integer.valueOf(sharedPref.getString(getString(R.string.key_step_trigger), "15"));
+
+            //note:times are in GMT
+            Log.d(TAG, "\n");
+            Log.d(TAG, "resume on reboot:" + resumeOnReboot);
+            Log.d(TAG, "silent start:" + (silent_start * 0.000000277778));
+            Log.d(TAG, "silent stop:" + (silent_stop * 0.000000277778));
+            Log.d(TAG, "remind interval:" + remind_interval);
+            Log.d(TAG, "step trigger:" + step_trigger);
+
+
+            PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(CONFIG_PATH);
+
+            //DEBUG
+            putDataMapRequest.getDataMap().putLong("time_stamp", System.currentTimeMillis());
+            putDataMapRequest.setUrgent();
+            Log.d(TAG, "timestamp:" + System.currentTimeMillis());
+            //END DEBUG
+
+            putDataMapRequest.getDataMap().putBoolean(REBOOT_KEY, resumeOnReboot);
+            putDataMapRequest.getDataMap().putLong(SILENT_START_KEY, silent_start);
+            putDataMapRequest.getDataMap().putLong(SILENT_STOP_KEY, silent_stop);
+            putDataMapRequest.getDataMap().putInt(REMIND_INTERVAL_KEY, remind_interval);
+            putDataMapRequest.getDataMap().putInt(STEP_TRIGGER_KEY, step_trigger);
+
+            PutDataRequest request = putDataMapRequest.asPutDataRequest();
+            request.setUrgent();
+
+            Log.d(TAG, "Generating DataItem: " + request);
+            if (!mGoogleApiClient.isConnected()) {
+                return;
+            }
+            Wearable.DataApi.putDataItem(mGoogleApiClient, request)
+                    .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+                        @Override
+                        public void onResult(DataApi.DataItemResult dataItemResult) {
+                            if (!dataItemResult.getStatus().isSuccess()) {
+                                Log.e(TAG, "ERROR: failed to putDataItem, status code: "
+                                        + dataItemResult.getStatus().getStatusCode());
+                            }
+                        }
+                    });
+        }
+    }
 
 
     /**
@@ -237,14 +296,23 @@ public class SettingsActivity extends AppCompatActivity implements
 
 
     public void btnSyncToWear(View view){
+        sendSettingsToWear();
+        Toast.makeText(this,R.string.synced_to_wear, Toast.LENGTH_SHORT).show();
+    }
 
+    private void sendSettingsToWear(){
+        mDataItemGeneratorFuture = mGeneratorExecutor.schedule(
+                new DataItemGenerator(), 100,TimeUnit.MILLISECONDS);
+    }
+
+    public void btnStartWearActivity(View view){
         Log.d(TAG, "Generating RPC");
 
         // Trigger an AsyncTask that will query for a list of connected nodes and send a
         // "start-activity" message to each connected node.
         new StartWearableActivityTask().execute();
 
-        Toast.makeText(this,R.string.synced_to_wear, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,R.string.wear_opened, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -337,16 +405,5 @@ public class SettingsActivity extends AppCompatActivity implements
             return null;
         }
     }
-
-
-    /**
-     * As simple wrapper around Log.d
-     */
-    private static void LOGD(final String tag, String message) {
-        if (Log.isLoggable(tag, Log.DEBUG)) {
-            Log.d(tag, message);
-        }
-    }
-
 
 }

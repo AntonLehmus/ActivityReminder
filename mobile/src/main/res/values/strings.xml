@@ -21,4 +21,6 @@
     <string name="key_remind_interval">remind_interval</string>
     <string name="key_step_trigger">step_trigger</string>
     <string name="synced_to_wear">Settings synced to wear!</string>
+    <string name="btn_launch_wear">Start Wear app</string>
+    <string name="wear_opened">Wear app opened</string>
 </resources>

@@ -55,10 +55,7 @@ public class MainActivity extends Activity  {
 
 
         if(!alarmSet) {
-
-            //start the wearApiListener
-            startService(new Intent(this, wearApiListenerService.class));
-
+            //start repeating StepReaderService
             AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(getApplicationContext(), StepReaderService.class);
             PendingIntent scheduledIntent = PendingIntent.getService(getApplicationContext(), StepReaderService.REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);

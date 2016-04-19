@@ -28,7 +28,7 @@ public class StepReaderService extends Service implements SensorEventListener {
     private final String PERSISTENT_STEPS = "persistent_steps" ;
     private final String CYCLE_START_TIME = "cycle_start_time" ;
     private final float DEFAULT_STEP_COUNT_TRIGGER = 15;
-    private final int DEFAULT_INTERVAL = 15                                                                                                                                                                                     ; //15-20min vaikutti hyvältä
+    private final int DEFAULT_INTERVAL = 20;                                                                                                                                                                                     ; //15-20min vaikutti hyvältä
     private final long DEFAULT_CYCLE_TIME = 3600000; //60min in milliseconds
     private final int DEFAULT_SILENT_START = 20;
     private final int DEFAULT_SILENT_STOP = 8;
