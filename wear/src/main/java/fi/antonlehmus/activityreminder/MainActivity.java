@@ -56,6 +56,9 @@ public class MainActivity extends Activity  {
 
         if(!alarmSet) {
 
+            //start the wearApiListener
+            startService(new Intent(this, wearApiListenerService.class));
+
             AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(getApplicationContext(), StepReaderService.class);
             PendingIntent scheduledIntent = PendingIntent.getService(getApplicationContext(), StepReaderService.REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -82,7 +85,6 @@ public class MainActivity extends Activity  {
     public void stopReminder(View view){
         AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         scheduler.cancel(StepReaderService.getScheduledIntent());
-
 
         Intent animationIntent = new Intent(this, ConfirmationActivity.class);
         animationIntent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE,
