@@ -3,22 +3,16 @@ package fi.antonlehmus.activityreminder;
 
 
 
-import android.content.Context;
+
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -26,11 +20,10 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.data.FreezableUtils;
+
 import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataEvent;
+
 import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
@@ -43,9 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -54,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SettingsActivity extends AppCompatActivity implements
         DataApi.DataListener,
-        MessageApi.MessageListener, NodeApi.NodeListener, GoogleApiClient.ConnectionCallbacks,
+        MessageApi.MessageListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     /**
@@ -122,7 +113,6 @@ public class SettingsActivity extends AppCompatActivity implements
         if (!mResolvingError) {
             Wearable.DataApi.removeListener(mGoogleApiClient, this);
             Wearable.MessageApi.removeListener(mGoogleApiClient, this);
-            Wearable.NodeApi.removeListener(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
         super.onStop();
@@ -134,7 +124,6 @@ public class SettingsActivity extends AppCompatActivity implements
         mResolvingError = false;
         Wearable.DataApi.addListener(mGoogleApiClient, this);
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
-        Wearable.NodeApi.addListener(mGoogleApiClient, this);
     }
 
     @Override //ConnectionCallbacks
@@ -160,7 +149,6 @@ public class SettingsActivity extends AppCompatActivity implements
             mResolvingError = false;
             Wearable.DataApi.removeListener(mGoogleApiClient, this);
             Wearable.MessageApi.removeListener(mGoogleApiClient, this);
-            Wearable.NodeApi.removeListener(mGoogleApiClient, this);
         }
     }
 
@@ -173,16 +161,6 @@ public class SettingsActivity extends AppCompatActivity implements
     public void onMessageReceived(final MessageEvent messageEvent) {
         Log.d(TAG, "onMessageReceived() A message from watch was received:" + messageEvent
                 .getRequestId() + " " + messageEvent.getPath());
-    }
-
-    @Override //NodeListener
-    public void onPeerConnected(final Node peer) {
-        Log.d(TAG, "onPeerConnected: " + peer);
-    }
-
-    @Override //NodeListener
-    public void onPeerDisconnected(final Node peer) {
-        Log.d(TAG, "onPeerDisconnected: " + peer);
     }
 
     private class DataItemGenerator implements Runnable {

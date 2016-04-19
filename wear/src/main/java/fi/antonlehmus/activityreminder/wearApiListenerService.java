@@ -44,7 +44,6 @@ public class wearApiListenerService extends WearableListenerService
     private static final String TAG = "wearApiListenerService";
     private static final String START_ACTIVITY_PATH = "/start-activity";
     public static final String CONFIG_PATH = "/config";
-    private static final String DATA_ITEM_RECEIVED_PATH = "/data-item-received";
 
 
     private GoogleApiClient mGoogleApiClient;
