@@ -2,14 +2,12 @@ package fi.antonlehmus.activityreminder;
 
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;;
-import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -19,19 +17,15 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
 
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.NodeApi;
+
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
-
-import java.util.concurrent.TimeUnit;
 
 
 public class wearApiListenerService extends WearableListenerService
         implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        DataApi.DataListener, MessageApi.MessageListener,
-        NodeApi.NodeListener {
+        DataApi.DataListener, MessageApi.MessageListener{
 
 
     public static final String REBOOT_KEY = "resume_on_reboot";
@@ -70,7 +64,6 @@ public class wearApiListenerService extends WearableListenerService
     public void onDestroy() {
         Wearable.DataApi.removeListener(mGoogleApiClient, this);
         Wearable.MessageApi.removeListener(mGoogleApiClient, this);
-        Wearable.NodeApi.removeListener(mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
         super.onDestroy();
     }
@@ -80,7 +73,6 @@ public class wearApiListenerService extends WearableListenerService
         Log.d(TAG, "onConnected(): Successfully connected to Google API client");
         Wearable.DataApi.addListener(mGoogleApiClient, this);
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
-        Wearable.NodeApi.addListener(mGoogleApiClient, this);
     }
 
     @Override
@@ -147,15 +139,6 @@ public class wearApiListenerService extends WearableListenerService
         }
     }
 
-    @Override
-    public void onPeerConnected(Node peer) {
-        Log.d(TAG, "onPeerConnected: " + peer);
-    }
-
-    @Override
-    public void onPeerDisconnected(Node peer) {
-        Log.d(TAG, "onPeerDisconnected: " + peer);
-    }
 
 }
 
