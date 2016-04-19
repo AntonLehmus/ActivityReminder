@@ -78,9 +78,6 @@ public class SettingsActivity extends AppCompatActivity implements
 
     private GoogleApiClient mGoogleApiClient;
     private boolean mResolvingError;
-    private ListView mDataItemList;
-    private DataItemAdapter mDataItemListAdapter;
-    private Handler mHandler;
 
     // Send DataItems.
     private ScheduledExecutorService mGeneratorExecutor;
@@ -91,12 +88,6 @@ public class SettingsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        mHandler = new Handler();
-        mDataItemList = (ListView) findViewById(R.id.data_item_list);
-
-        // Stores DataItems received by the local broadcaster or from the paired watch.
-        mDataItemListAdapter = new DataItemAdapter(this, android.R.layout.simple_list_item_1);
-        mDataItemList.setAdapter(mDataItemListAdapter);
 
         mGeneratorExecutor = new ScheduledThreadPoolExecutor(1);
 
@@ -176,58 +167,22 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override //DataListener
     public void onDataChanged(DataEventBuffer dataEvents) {
         Log.d(TAG, "onDataChanged: " + dataEvents);
-        // Need to freeze the dataEvents so they will exist later on the UI thread
-        final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (DataEvent event : events) {
-                    if (event.getType() == DataEvent.TYPE_CHANGED) {
-                        mDataItemListAdapter.add(
-                                new Event("DataItem Changed", event.getDataItem().toString()));
-                    } else if (event.getType() == DataEvent.TYPE_DELETED) {
-                        mDataItemListAdapter.add(
-                                new Event("DataItem Deleted", event.getDataItem().toString()));
-                    }
-                }
-            }
-        });
     }
 
     @Override //MessageListener
     public void onMessageReceived(final MessageEvent messageEvent) {
         Log.d(TAG, "onMessageReceived() A message from watch was received:" + messageEvent
                 .getRequestId() + " " + messageEvent.getPath());
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mDataItemListAdapter.add(new Event("Message from watch", messageEvent.toString()));
-            }
-        });
-
     }
 
     @Override //NodeListener
     public void onPeerConnected(final Node peer) {
         Log.d(TAG, "onPeerConnected: " + peer);
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mDataItemListAdapter.add(new Event("Connected", peer.toString()));
-            }
-        });
-
     }
 
     @Override //NodeListener
     public void onPeerDisconnected(final Node peer) {
         Log.d(TAG, "onPeerDisconnected: " + peer);
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mDataItemListAdapter.add(new Event("Disconnected", peer.toString()));
-            }
-        });
     }
 
     private class DataItemGenerator implements Runnable {
@@ -315,57 +270,6 @@ public class SettingsActivity extends AppCompatActivity implements
         Toast.makeText(this,R.string.wear_opened, Toast.LENGTH_SHORT).show();
     }
 
-
-
-    /**
-     * A View Adapter for presenting the Event objects in a list
-     */
-    private static class DataItemAdapter extends ArrayAdapter<Event> {
-
-        private final Context mContext;
-
-        public DataItemAdapter(Context context, int unusedResource) {
-            super(context, unusedResource);
-            mContext = context;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(android.R.layout.two_line_list_item, null);
-                convertView.setTag(holder);
-                holder.text1 = (TextView) convertView.findViewById(android.R.id.text1);
-                holder.text2 = (TextView) convertView.findViewById(android.R.id.text2);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            Event event = getItem(position);
-            holder.text1.setText(event.title);
-            holder.text2.setText(event.text);
-            return convertView;
-        }
-
-        private class ViewHolder {
-
-            TextView text1;
-            TextView text2;
-        }
-    }
-
-    private class Event {
-
-        String title;
-        String text;
-
-        public Event(String title, String text) {
-            this.title = title;
-            this.text = text;
-        }
-    }
 
     private Collection<String> getNodes() {
         HashSet<String> results = new HashSet<>();

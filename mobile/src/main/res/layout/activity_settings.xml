@@ -59,11 +59,4 @@
             />
 
     </FrameLayout>
-
-    <ListView
-        android:id="@+id/data_item_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:transcriptMode="alwaysScroll" />
-
 </RelativeLayout>
