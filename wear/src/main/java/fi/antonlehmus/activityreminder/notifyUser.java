@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
 
@@ -17,7 +18,7 @@ public class notifyUser extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
 
         Bitmap bitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(context.getResources().getColor(R.color.teal_default));
+        bitmap.eraseColor(ContextCompat.getColor(context, R.color.colorAccent));
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)

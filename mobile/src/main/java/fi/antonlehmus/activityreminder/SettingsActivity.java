@@ -120,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //ConnectionCallbacks
     public void onConnected(Bundle connectionHint) {
-        Log.d(TAG, "Google API Client was connected");
+        //Log.d(TAG, "Google API Client was connected");
         mResolvingError = false;
         Wearable.DataApi.addListener(mGoogleApiClient, this);
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
@@ -128,7 +128,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //ConnectionCallbacks
     public void onConnectionSuspended(int cause) {
-        Log.d(TAG, "Connection to Google API client was suspended");
+        //Log.d(TAG, "Connection to Google API client was suspended");
     }
 
     @Override //OnConnectionFailedListener
@@ -154,13 +154,13 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override //DataListener
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(TAG, "onDataChanged: " + dataEvents);
+        //Log.d(TAG, "onDataChanged: " + dataEvents);
     }
 
     @Override //MessageListener
     public void onMessageReceived(final MessageEvent messageEvent) {
-        Log.d(TAG, "onMessageReceived() A message from watch was received:" + messageEvent
-                .getRequestId() + " " + messageEvent.getPath());
+        //Log.d(TAG, "onMessageReceived() A message from watch was received:" + messageEvent
+        //        .getRequestId() + " " + messageEvent.getPath());
     }
 
     private class DataItemGenerator implements Runnable {
@@ -176,22 +176,15 @@ public class SettingsActivity extends AppCompatActivity implements
             int step_trigger = Integer.valueOf(sharedPref.getString(getString(R.string.key_step_trigger), "15"));
 
             //note:times are in GMT
-            Log.d(TAG, "\n");
-            Log.d(TAG, "resume on reboot:" + resumeOnReboot);
-            Log.d(TAG, "silent start:" + (silent_start * 0.000000277778));
-            Log.d(TAG, "silent stop:" + (silent_stop * 0.000000277778));
-            Log.d(TAG, "remind interval:" + remind_interval);
-            Log.d(TAG, "step trigger:" + step_trigger);
+            //Log.d(TAG, "\n");
+            //Log.d(TAG, "resume on reboot:" + resumeOnReboot);
+            //Log.d(TAG, "silent start:" + (silent_start * 0.000000277778));
+            //Log.d(TAG, "silent stop:" + (silent_stop * 0.000000277778));
+            //Log.d(TAG, "remind interval:" + remind_interval);
+            //Log.d(TAG, "step trigger:" + step_trigger);
 
 
             PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(CONFIG_PATH);
-
-            //DEBUG
-            putDataMapRequest.getDataMap().putLong("time_stamp", System.currentTimeMillis());
-            putDataMapRequest.setUrgent();
-            Log.d(TAG, "timestamp:" + System.currentTimeMillis());
-            //END DEBUG
-
             putDataMapRequest.getDataMap().putBoolean(REBOOT_KEY, resumeOnReboot);
             putDataMapRequest.getDataMap().putLong(SILENT_START_KEY, silent_start);
             putDataMapRequest.getDataMap().putLong(SILENT_STOP_KEY, silent_stop);
@@ -239,7 +232,7 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     public void btnStartWearActivity(View view){
-        Log.d(TAG, "Generating RPC");
+        //Log.d(TAG, "Generating RPC");
 
         // Trigger an AsyncTask that will query for a list of connected nodes and send a
         // "start-activity" message to each connected node.

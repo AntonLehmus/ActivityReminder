@@ -8,31 +8,30 @@
     tools:deviceIds="wear_square"
     android:gravity="center">
 
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
         <Button
+            android:background="@color/colorAccent"
+            android:textColor="@color/white"
+            android:layout_margin="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="@string/startReminder"
             android:id="@+id/btnStartReminder"
-            android:onClick="startReminder"/>
+            android:onClick="startReminder"
+            />
 
         <Button
-            android:layout_above="@+id/btnStartReminder"
+            android:background="@color/colorAccent"
+            android:textColor="@color/white"
+            android:layout_margin="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="@string/stopReminder"
             android:id="@+id/btnStopReminder"
-            android:onClick="stopReminder"/>
-    </LinearLayout>
-
+            android:onClick="stopReminder"
+           />
 
 </LinearLayout>

@@ -1,13 +1,15 @@
 package fi.antonlehmus.activityreminder;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -27,7 +29,7 @@ public class wearApiListenerService extends WearableListenerService
         GoogleApiClient.OnConnectionFailedListener,
         DataApi.DataListener, MessageApi.MessageListener{
 
-
+    public static final String USR_CONFIG = "user_config";
     public static final String REBOOT_KEY = "resume_on_reboot";
     public static final String SILENT_START_KEY = "silent_start";
     public static final String SILENT_STOP_KEY = "silent_stop";
@@ -98,7 +100,7 @@ public class wearApiListenerService extends WearableListenerService
                     Log.d(TAG, "Data Changed for CONFIG_PATH");
                     Log.d(TAG,("DataItem Changed"+event.getDataItem().toString()));
 
-
+                    //read settings from data layer
                     DataMap dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                     resumeOnReboot = dataMap.getBoolean(REBOOT_KEY);
                     silent_start = dataMap.getLong(SILENT_START_KEY);
@@ -113,6 +115,15 @@ public class wearApiListenerService extends WearableListenerService
                     Log.d(TAG,"remind interval:"+remind_interval);
                     Log.d(TAG,"step trigger:"+step_trigger);
 
+                    //save settings to persistent storage
+                    SharedPreferences sharedPref = getSharedPreferences(USR_CONFIG, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putBoolean(REBOOT_KEY, resumeOnReboot);
+                    editor.putLong(SILENT_START_KEY, silent_start);
+                    editor.putLong(SILENT_STOP_KEY, silent_stop);
+                    editor.putInt(REMIND_INTERVAL_KEY, remind_interval);
+                    editor.putInt(STEP_TRIGGER_KEY, step_trigger);
+                    editor.apply();
 
 
                 } else {

@@ -16,10 +16,11 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+
 
 public class StepReaderService extends Service implements SensorEventListener {
 
-    private final int DEBUG_INTERVAL = 30;
 
     public static final int REQUEST_CODE = 931;
 
@@ -27,9 +28,8 @@ public class StepReaderService extends Service implements SensorEventListener {
     private final String SAVED_STEPS ="saved_steps";
     private final String PERSISTENT_STEPS = "persistent_steps" ;
     private final String CYCLE_START_TIME = "cycle_start_time" ;
-    private final float DEFAULT_STEP_COUNT_TRIGGER = 15;
-    private final int DEFAULT_INTERVAL = 20;                                                                                                                                                                                     ; //15-20min vaikutti hyvältä
-    private final long DEFAULT_CYCLE_TIME = 3600000; //60min in milliseconds
+    private final int DEFAULT_STEP_COUNT_TRIGGER = 15;
+    private final int DEFAULT_INTERVAL = 20;//15-20min vaikutti hyvältä
     private final int DEFAULT_SILENT_START = 20;
     private final int DEFAULT_SILENT_STOP = 8;
 
@@ -46,19 +46,26 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     private SensorManager sensorManager = null;
     private Sensor sensor = null;
-    private Calendar calendarSilentStart = null;
-    private Calendar calendarSilentStop = null;
 
-    private static boolean resumeOnReboot;
+
     private static long silent_start;
     private static long silent_stop ;
     private static int remind_interval;
     private static int step_trigger;
-
+    private static long remind_interval_millis;
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        //read user configuration
+        SharedPreferences sharedPrefUsr =  getSharedPreferences(wearApiListenerService.USR_CONFIG, Context.MODE_PRIVATE);
+        silent_start = sharedPrefUsr.getLong(wearApiListenerService.SILENT_START_KEY,DEFAULT_SILENT_START);
+        silent_stop = sharedPrefUsr.getLong(wearApiListenerService.SILENT_STOP_KEY,DEFAULT_SILENT_STOP);
+        remind_interval = sharedPrefUsr.getInt(wearApiListenerService.REMIND_INTERVAL_KEY,DEFAULT_INTERVAL);
+        step_trigger = sharedPrefUsr.getInt(wearApiListenerService.STEP_TRIGGER_KEY,DEFAULT_STEP_COUNT_TRIGGER);
+
+        remind_interval_millis = TimeUnit.MINUTES.toMillis(remind_interval);
 
         //read steps from last time and cycle running time
         SharedPreferences sharedPref =  getSharedPreferences(PERSISTENT_STEPS, Context.MODE_PRIVATE);
@@ -66,13 +73,6 @@ public class StepReaderService extends Service implements SensorEventListener {
         last_cycle_time = sharedPref.getLong(CYCLE_START_TIME, 0);
         time_since_cycle_start = System.currentTimeMillis()-last_cycle_time;
 
-        calendarSilentStart = Calendar.getInstance();
-        calendarSilentStart.set(Calendar.HOUR_OF_DAY, DEFAULT_SILENT_START);
-        calendarSilentStart.set(Calendar.MINUTE,0);
-
-        calendarSilentStop = Calendar.getInstance();
-        calendarSilentStop.set(Calendar.HOUR_OF_DAY, DEFAULT_SILENT_STOP);
-        calendarSilentStop.set(Calendar.MINUTE,0);
 
         Log.d(LOG_TAG,"cycle has been running "+(time_since_cycle_start/60000)+" minutes");
 
@@ -92,15 +92,27 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     @Override
     public void onDestroy (){
+
+        Calendar calendar = Calendar.getInstance();
+        long currentMillis = TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY));
+
         Log.d(LOG_TAG, "steps updated " + steps);
         Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
+        Log.d(LOG_TAG, "time_since_cycle_start-remind_interval_millis=" + (time_since_cycle_start - remind_interval_millis));
+        Log.d(LOG_TAG,"silent start hour:"+((silent_start)*0.000000277778));
+        Log.d(LOG_TAG,"silent stop hour:"+((silent_stop)*0.000000277778));
+        Log.d(LOG_TAG,"current hour(millis):"+(currentMillis));
+        Log.d(LOG_TAG,"current millis:"+( calendar.getTimeInMillis ()));
+        Log.d(LOG_TAG,"current millis(system):"+( System.currentTimeMillis()));
+        Log.d(LOG_TAG,"current hour: "+( calendar.get(Calendar.HOUR_OF_DAY)));
+        Log.d(LOG_TAG, " calendar.getTimeInMillis() - silent_start=" + ( currentMillis- silent_start));
 
         //silent hours
-        if(System.currentTimeMillis()> calendarSilentStart.getTimeInMillis()){
-            scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),calendarSilentStop.getTimeInMillis(), scheduledIntent);
+        if( currentMillis > silent_start){
+            scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis(),silent_stop, scheduledIntent);
         }
-        else if(steps-oldSteps>DEFAULT_STEP_COUNT_TRIGGER || time_since_cycle_start>DEFAULT_CYCLE_TIME){
-            setAlarm(DEBUG_INTERVAL);
+        else if(steps-oldSteps > step_trigger || time_since_cycle_start > remind_interval_millis){
+            setAlarm(remind_interval);
             startNewCycle();
         }
         else{
@@ -132,7 +144,6 @@ public class StepReaderService extends Service implements SensorEventListener {
         protected Float doInBackground(SensorEvent... events) {
             SensorEvent event = events[0];
             steps = event.values[0];
-
             return steps;
         }
     }
@@ -144,7 +155,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         editor.putLong(CYCLE_START_TIME, System.currentTimeMillis());
         editor.apply();
 
-        if(steps-oldSteps<DEFAULT_STEP_COUNT_TRIGGER){
+        if((steps-oldSteps) < DEFAULT_STEP_COUNT_TRIGGER){
             notifyUser();
         }
 
@@ -156,18 +167,14 @@ public class StepReaderService extends Service implements SensorEventListener {
         notifyIntent.setAction("fi.antonlehmus.activityreminde.notifyUser");
         sendBroadcast(notifyIntent);
     }
-
-    private void cancelAlarm(){
-        scheduler.cancel(scheduledIntent);
-    }
-
+    
     private void setAlarm(int interval){
         long timeToNextAlarm = interval;
         if(timeToNextAlarm==0) {
            timeToNextAlarm=AlarmManager.INTERVAL_HOUR;
         }
         else {
-           timeToNextAlarm = minuteToMilliSecond(interval);
+           timeToNextAlarm = TimeUnit.MINUTES.toMillis(interval);
         }
 
         Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes ");
@@ -175,8 +182,11 @@ public class StepReaderService extends Service implements SensorEventListener {
         scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), timeToNextAlarm, scheduledIntent);
     }
 
-    private long minuteToMilliSecond(int min){
-        return 60000*min;
+    private long toUnixTime(long time){
+        long unixTime = 0;
+
+
+        return unixTime;
     }
 
     public static PendingIntent getScheduledIntent(){
