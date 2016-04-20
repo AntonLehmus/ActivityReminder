@@ -13,6 +13,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 public class TimePreference extends DialogPreference {
     private Calendar calendar;
@@ -98,5 +99,16 @@ public class TimePreference extends DialogPreference {
             return null;
         }
         return DateFormat.getTimeFormat(getContext()).format(new Date(calendar.getTimeInMillis()));
+    }
+
+    //returns milliseconds of calendar object from start of the day
+    private long getCurrentMillis(Calendar calendar){
+        long sum = 0;
+
+        sum= TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY))+
+                TimeUnit.MINUTES.toMillis(calendar.get(Calendar.MINUTE))+
+                TimeUnit.SECONDS.toMillis(calendar.get(Calendar.SECOND))+
+                calendar.get(Calendar.MILLISECOND);
+        return sum;
     }
 }

@@ -16,6 +16,9 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 
@@ -94,18 +97,22 @@ public class StepReaderService extends Service implements SensorEventListener {
     public void onDestroy (){
 
         Calendar calendar = Calendar.getInstance();
-        long currentMillis = TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY));
+        long currentMillis = TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY)-2);
+        long curMillis = getCurrentMillis(calendar);
 
+        /*
         Log.d(LOG_TAG, "steps updated " + steps);
         Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
         Log.d(LOG_TAG, "time_since_cycle_start-remind_interval_millis=" + (time_since_cycle_start - remind_interval_millis));
         Log.d(LOG_TAG,"silent start hour:"+((silent_start)*0.000000277778));
         Log.d(LOG_TAG,"silent stop hour:"+((silent_stop)*0.000000277778));
         Log.d(LOG_TAG,"current hour(millis):"+(currentMillis));
-        Log.d(LOG_TAG,"current millis:"+( calendar.getTimeInMillis ()));
-        Log.d(LOG_TAG,"current millis(system):"+( System.currentTimeMillis()));
-        Log.d(LOG_TAG,"current hour: "+( calendar.get(Calendar.HOUR_OF_DAY)));
+        Log.d(LOG_TAG,"curMillis:"+(curMillis));
+        //Log.d(LOG_TAG,"current millis:"+( calendar.getTimeInMillis ()));
+        //Log.d(LOG_TAG,"current millis(system):"+( System.currentTimeMillis()));
+        //Log.d(LOG_TAG,"current hour: "+( calendar.get(Calendar.HOUR_OF_DAY)));
         Log.d(LOG_TAG, " calendar.getTimeInMillis() - silent_start=" + ( currentMillis- silent_start));
+        */
 
         //silent hours
         if( currentMillis > silent_start){
@@ -182,11 +189,15 @@ public class StepReaderService extends Service implements SensorEventListener {
         scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), timeToNextAlarm, scheduledIntent);
     }
 
-    private long toUnixTime(long time){
-        long unixTime = 0;
+    //returns milliseconds of calendar object from start of the day
+    private long getCurrentMillis(Calendar calendar){
+        long sum = 0;
 
-
-        return unixTime;
+        sum=TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY))+
+                TimeUnit.MINUTES.toMillis(calendar.get(Calendar.MINUTE))+
+                TimeUnit.SECONDS.toMillis(calendar.get(Calendar.SECOND))+
+                calendar.get(Calendar.MILLISECOND);
+        return sum;
     }
 
     public static PendingIntent getScheduledIntent(){

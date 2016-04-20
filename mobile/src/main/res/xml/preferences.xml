@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:key="@string/key_resume_on_boot"
-        android:title="@string/resume_on_reboot"
-        android:summary="@string/resume_on_reboot_summary"
-        android:defaultValue="true"
-        android:persistent="true"/>
+    <PreferenceCategory
+        android:title="@string/resume_on_reboot_main_title">
+        <CheckBoxPreference
+            android:key="@string/key_resume_on_boot"
+            android:title="@string/resume_on_reboot"
+            android:summary="@string/resume_on_reboot_summary"
+            android:defaultValue="true"
+            android:persistent="true"/>
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/silent_hours">
         <!--defaultValue = 20:00 in milliseconds -->
@@ -23,22 +26,28 @@
             android:persistent="true"
             />
     </PreferenceCategory>
-    <EditTextPreference
-        android:key="@string/key_remind_interval"
-        android:summary="@string/remind_interval_summary"
-        android:title="@string/reminder_interval"
-        android:defaultValue="60"
-        android:persistent="true"
-        android:numeric="integer"
-        android:maxLength="3"
-        />
-    <EditTextPreference
-        android:key="@string/key_step_trigger"
-        android:summary="@string/steps_considered_as_active"
-        android:title="@string/step_count"
-        android:defaultValue="15"
-        android:persistent="true"
-        android:numeric="integer"
-        android:maxLength="5"
-        />
+    <PreferenceCategory
+        android:title="@string/remind_interval_main_title">
+        <EditTextPreference
+            android:key="@string/key_remind_interval"
+            android:summary="@string/remind_interval_summary"
+            android:title="@string/reminder_interval"
+            android:defaultValue="60"
+            android:persistent="true"
+            android:numeric="integer"
+            android:maxLength="3"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/steps_main_title">
+        <EditTextPreference
+            android:key="@string/key_step_trigger"
+            android:summary="@string/steps_considered_as_active"
+            android:title="@string/step_count"
+            android:defaultValue="15"
+            android:persistent="true"
+            android:numeric="integer"
+            android:maxLength="5"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>

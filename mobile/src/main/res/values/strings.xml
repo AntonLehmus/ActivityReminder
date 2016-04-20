@@ -13,7 +13,7 @@
     <string name="step_count">Step count</string>
     <string name="reminder_interval">Reminder interval</string>
     <string name="remind_interval_summary">Remind me this often (in minutes)</string>
-    <string name="btn_sync_to_wear">Sync to wear</string>
+    <string name="btn_sync_to_wear">Save settings</string>
     <string name="no_wear_api">Please install Android Wear app!</string>
     <string name="key_resume_on_boot">resume_on_boot</string>
     <string name="key_silent_start">silent_start</string>
@@ -23,4 +23,7 @@
     <string name="synced_to_wear">Settings synced to wear!</string>
     <string name="btn_launch_wear">Start Wear app</string>
     <string name="wear_opened">Wear app opened</string>
+    <string name="resume_on_reboot_main_title">Reboot</string>
+    <string name="remind_interval_main_title">Reminds</string>
+    <string name="steps_main_title">Steps</string>
 </resources>
