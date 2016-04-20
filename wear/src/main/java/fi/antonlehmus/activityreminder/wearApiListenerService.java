@@ -72,14 +72,14 @@ public class wearApiListenerService extends WearableListenerService
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d(TAG, "onConnected(): Successfully connected to Google API client");
+        //Log.d(TAG, "onConnected(): Successfully connected to Google API client");
         Wearable.DataApi.addListener(mGoogleApiClient, this);
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
-        Log.d(TAG, "onConnectionSuspended(): Connection to Google API client was suspended");
+        //Log.d(TAG, "onConnectionSuspended(): Connection to Google API client was suspended");
     }
 
     @Override
@@ -89,7 +89,7 @@ public class wearApiListenerService extends WearableListenerService
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(TAG, "onDataChanged(): " + dataEvents);
+        //Log.d(TAG, "onDataChanged(): " + dataEvents);
 
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
@@ -97,8 +97,8 @@ public class wearApiListenerService extends WearableListenerService
 
 
                 if (CONFIG_PATH.equals(path)) {
-                    Log.d(TAG, "Data Changed for CONFIG_PATH");
-                    Log.d(TAG,("DataItem Changed"+event.getDataItem().toString()));
+                    //Log.d(TAG, "Data Changed for CONFIG_PATH");
+                    //Log.d(TAG,("DataItem Changed"+event.getDataItem().toString()));
 
                     //read settings from data layer
                     DataMap dataMap = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
@@ -128,20 +128,20 @@ public class wearApiListenerService extends WearableListenerService
 
 
                 } else {
-                    Log.d(TAG, "Unrecognized path: " + path);
+                    //Log.d(TAG, "Unrecognized path: " + path);
                 }
 
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
-                Log.d(TAG,(("DataItem Deleted"+event.getDataItem().toString())));
+                //Log.d(TAG,(("DataItem Deleted"+event.getDataItem().toString())));
             } else {
-                Log.d(TAG,(("Unknown data event type"+"Type = " + event.getType())));
+                //Log.d(TAG,(("Unknown data event type"+"Type = " + event.getType())));
             }
         }
     }
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
-        Log.d(TAG, "onMessageReceived: " + messageEvent);
+        //Log.d(TAG, "onMessageReceived: " + messageEvent);
 
         // Check to see if the message is to start an activity
         if (messageEvent.getPath().equals(START_ACTIVITY_PATH)) {
