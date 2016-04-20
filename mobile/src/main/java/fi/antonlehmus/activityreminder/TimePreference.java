@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.TimePicker;
 
@@ -76,15 +77,18 @@ public class TimePreference extends DialogPreference {
 
     @Override
     protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-
+        //Log.d("TimePreference","onSetInitialValue");
+        //Log.d("TimePreference","restoreValue="+restoreValue);
         if (restoreValue) {
             if (defaultValue == null) {
+                //Log.d("TimePreference","defaultValue=null");
                 calendar.setTime(parseDate(getPersistedLong(getCurrentMillis(calendar))));
             } else {
                 calendar.setTime(parseDate(Long.parseLong(getPersistedString((String) defaultValue))));
             }
         } else {
             if (defaultValue == null) {
+                //Log.d("TimePreference","defaultValue=null");
                 calendar.setTime(parseDate(getCurrentMillis(calendar)));
             } else {
                 calendar.setTime(parseDate(Long.parseLong((String) defaultValue)));
@@ -128,8 +132,8 @@ public class TimePreference extends DialogPreference {
         calendar.set(Calendar.MINUTE,(int)minutes);
         calendar.set(Calendar.SECOND,(int)seconds);
         calendar.set(Calendar.MILLISECOND,(int)millis);
-
-        /*Log.d("parseDate","parsed: "+calendar.get(Calendar.HOUR_OF_DAY)+":"+
+        /*
+        Log.d("TimePreference","parsed: "+calendar.get(Calendar.HOUR_OF_DAY)+":"+
                 calendar.get(Calendar.MINUTE)+":"+
                 calendar.get(Calendar.SECOND)+":"+millis);
         */

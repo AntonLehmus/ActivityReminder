@@ -108,12 +108,13 @@ public class wearApiListenerService extends WearableListenerService
                     remind_interval = dataMap.getInt(REMIND_INTERVAL_KEY);
                     step_trigger = dataMap.getInt(STEP_TRIGGER_KEY);
 
-                    //note:times are in GMT
+                    /*
                     Log.d(TAG,"resume on reboot:"+resumeOnReboot);
                     Log.d(TAG,"silent start:"+(silent_start*0.000000277778));
                     Log.d(TAG,"silent stop:"+(silent_stop*0.000000277778));
                     Log.d(TAG,"remind interval:"+remind_interval);
                     Log.d(TAG,"step trigger:"+step_trigger);
+                    */
 
                     //save settings to persistent storage
                     SharedPreferences sharedPref = getSharedPreferences(USR_CONFIG, Context.MODE_PRIVATE);

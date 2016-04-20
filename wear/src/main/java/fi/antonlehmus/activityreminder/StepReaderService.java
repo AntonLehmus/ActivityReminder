@@ -97,22 +97,16 @@ public class StepReaderService extends Service implements SensorEventListener {
     public void onDestroy (){
 
         Calendar calendar = Calendar.getInstance();
-        long currentMillis = TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY));
-        long curMillis = getCurrentMillis(calendar);
+        //current milliseconds from start of the day
+        long currentMillis = getCurrentMillis(calendar);
 
-        /*
-        Log.d(LOG_TAG, "steps updated " + steps);
+
+        //Log.d(LOG_TAG, "total steps" + steps);
         Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
-        Log.d(LOG_TAG, "time_since_cycle_start-remind_interval_millis=" + (time_since_cycle_start - remind_interval_millis));
+        Log.d(LOG_TAG, "remind_interval_millis - time_since_cycle_start =" + (remind_interval_millis - time_since_cycle_start ));
         Log.d(LOG_TAG,"silent start hour:"+((silent_start)*0.000000277778));
         Log.d(LOG_TAG,"silent stop hour:"+((silent_stop)*0.000000277778));
-        Log.d(LOG_TAG,"current hour(millis):"+(currentMillis));
-        Log.d(LOG_TAG,"curMillis:"+(curMillis));
-        //Log.d(LOG_TAG,"current millis:"+( calendar.getTimeInMillis ()));
-        //Log.d(LOG_TAG,"current millis(system):"+( System.currentTimeMillis()));
-        //Log.d(LOG_TAG,"current hour: "+( calendar.get(Calendar.HOUR_OF_DAY)));
-        Log.d(LOG_TAG, " calendar.getTimeInMillis() - silent_start=" + ( currentMillis- silent_start));
-        */
+
 
         //silent hours
         if( currentMillis > silent_start){

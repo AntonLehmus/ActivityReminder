@@ -175,11 +175,11 @@ public class SettingsActivity extends AppCompatActivity implements
             int remind_interval = Integer.valueOf(sharedPref.getString(getString(R.string.key_remind_interval), "60"));
             int step_trigger = Integer.valueOf(sharedPref.getString(getString(R.string.key_step_trigger), "15"));
 
-            //note:times are in GMT
+
             //Log.d(TAG, "\n");
             //Log.d(TAG, "resume on reboot:" + resumeOnReboot);
-            Log.d(TAG, "silent start:" + (silent_start * 0.000000277778));
-            Log.d(TAG, "silent stop:" + (silent_stop * 0.000000277778));
+            //Log.d(TAG, "silent start:" + (silent_start * 0.000000277778));
+            //Log.d(TAG, "silent stop:" + (silent_stop * 0.000000277778));
             //Log.d(TAG, "remind interval:" + remind_interval);
             //Log.d(TAG, "step trigger:" + step_trigger);
 
@@ -194,7 +194,7 @@ public class SettingsActivity extends AppCompatActivity implements
             PutDataRequest request = putDataMapRequest.asPutDataRequest();
             request.setUrgent();
 
-            Log.d(TAG, "Generating DataItem: " + request);
+            //Log.d(TAG, "Generating DataItem: " + request);
             if (!mGoogleApiClient.isConnected()) {
                 return;
             }
