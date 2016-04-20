@@ -2,14 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fi.antonlehmus.activityreminder">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <uses-feature android:name="android.hardware.type.watch" />
     <uses-feature
         android:name="android.hardware.sensor.stepcounter"
         android:required="true" />
 
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -56,6 +57,14 @@
         <service
             android:name=".StepReaderService"
             android:exported="false">
+        </service>
+
+        <service android:name=".userNotificationBuilder"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="fi.antonlehmus.activityreminde.userNotificationBuilder" />
+            </intent-filter>
         </service>
 
         <service

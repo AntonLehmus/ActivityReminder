@@ -24,14 +24,14 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     public static final int REQUEST_CODE = 931;
 
-    private final String LOG_TAG ="StepReaderService";
-    private final String SAVED_STEPS ="saved_steps";
-    private final String PERSISTENT_STEPS = "persistent_steps" ;
-    private final String CYCLE_START_TIME = "cycle_start_time" ;
-    private final int DEFAULT_STEP_COUNT_TRIGGER = 15;
-    private final int DEFAULT_INTERVAL = 20;//15-20min vaikutti hyvältä
-    private final int DEFAULT_SILENT_START = 20;
-    private final int DEFAULT_SILENT_STOP = 8;
+    private static final String LOG_TAG ="StepReaderService";
+    private static final String SAVED_STEPS ="saved_steps";
+    private static final String PERSISTENT_STEPS = "persistent_steps" ;
+    private static final String CYCLE_START_TIME = "cycle_start_time" ;
+    private static final int DEFAULT_STEP_COUNT_TRIGGER = 15;
+    private static final int DEFAULT_INTERVAL = 20;//15-20min vaikutti hyvältä
+    private static final int DEFAULT_SILENT_START = 20;
+    private static final int DEFAULT_SILENT_STOP = 8;
 
 
     private float steps = 0;
@@ -69,6 +69,9 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         //adapt check_interval based on remind_interval
         check_interval = remind_interval/4;
+        if(check_interval<1){
+            check_interval=1;
+        }
 
         remind_interval_millis = TimeUnit.MINUTES.toMillis(remind_interval);
 
@@ -79,7 +82,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         time_since_cycle_start = System.currentTimeMillis()-last_cycle_time;
 
 
-        Log.d(LOG_TAG,"cycle has been running "+(time_since_cycle_start/60000)+" minutes");
+        //Log.d(LOG_TAG,"cycle has been running "+(time_since_cycle_start/60000)+" minutes");
 
         //set AlarmManager
         scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -105,10 +108,10 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         //Log.d(LOG_TAG, "total steps" + steps);
         //Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
-        //Log.d(LOG_TAG, "minutes left in this cycle =" + (remind_interval_millis - time_since_cycle_start )/60000);
-        //Log.d(LOG_TAG,"silent start hour:"+((silent_start)*0.000000277778));
-        //Log.d(LOG_TAG,"silent stop hour:"+((silent_stop)*0.000000277778));
-        //Log.d(LOG_TAG,"current hour:"+((currentMillis)*0.000000277778));
+        //Log.d(LOG_TAG, "minutes left in this cycle = " + (remind_interval_millis - time_since_cycle_start )/60000);
+        //Log.d(LOG_TAG,"silent start hour: "+((silent_start)*0.000000277778));
+        //Log.d(LOG_TAG,"silent stop hour: "+((silent_stop)*0.000000277778));
+        //Log.d(LOG_TAG,"current hour: "+((currentMillis)*0.000000277778));
 
 
         //silent hours
@@ -167,7 +170,7 @@ public class StepReaderService extends Service implements SensorEventListener {
             notifyUser();
         }
 
-        //Log.d(LOG_TAG,"New cycle started!");
+        Log.d(LOG_TAG,"New cycle started!");
     }
 
     private void notifyUser(){

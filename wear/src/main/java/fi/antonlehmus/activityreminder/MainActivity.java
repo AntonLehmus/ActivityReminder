@@ -53,7 +53,6 @@ public class MainActivity extends Activity  {
             alarmSet=true;
         }
 
-
         if(!alarmSet) {
             //start repeating StepReaderService
             AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
