@@ -117,6 +117,7 @@ public class wearApiListenerService extends WearableListenerService
                     Log.d(TAG,"silent stop:"+(silent_stop*0.000000277778));
                     Log.d(TAG,"remind interval:"+remind_interval);
                     Log.d(TAG,"step trigger:"+step_trigger);
+                    Log.d(TAG,"notification_priority: "+notification_priority);
                     */
 
                     //save settings to persistent storage
