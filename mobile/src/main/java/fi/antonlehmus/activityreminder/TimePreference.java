@@ -62,8 +62,8 @@ public class TimePreference extends DialogPreference {
             calendar.set(Calendar.MINUTE, picker.getCurrentMinute());
 
             setSummary(getSummary());
-            if (callChangeListener(calendar.getTimeInMillis())) {
-                persistLong(calendar.getTimeInMillis());
+            if (callChangeListener(getCurrentMillis(calendar))) {
+                persistLong(getCurrentMillis(calendar));
                 notifyChanged();
             }
         }
@@ -79,15 +79,15 @@ public class TimePreference extends DialogPreference {
 
         if (restoreValue) {
             if (defaultValue == null) {
-                calendar.setTimeInMillis(getPersistedLong(System.currentTimeMillis()));
+                calendar.setTime(parseDate(getPersistedLong(getCurrentMillis(calendar))));
             } else {
-                calendar.setTimeInMillis(Long.parseLong(getPersistedString((String) defaultValue)));
+                calendar.setTime(parseDate(Long.parseLong(getPersistedString((String) defaultValue))));
             }
         } else {
             if (defaultValue == null) {
-                calendar.setTimeInMillis(System.currentTimeMillis());
+                calendar.setTime(parseDate(getCurrentMillis(calendar)));
             } else {
-                calendar.setTimeInMillis(Long.parseLong((String) defaultValue));
+                calendar.setTime(parseDate(Long.parseLong((String) defaultValue)));
             }
         }
         setSummary(getSummary());
@@ -110,5 +110,32 @@ public class TimePreference extends DialogPreference {
                 TimeUnit.SECONDS.toMillis(calendar.get(Calendar.SECOND))+
                 calendar.get(Calendar.MILLISECOND);
         return sum;
+    }
+
+    private Date parseDate (long millisFromDayStart){
+        Calendar calendar = Calendar.getInstance();
+        Date date;
+        long millis= millisFromDayStart;
+
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis = millis - TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis = millis - TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        millis = millis - TimeUnit.SECONDS.toMillis(seconds);
+
+        calendar.set(Calendar.HOUR_OF_DAY,(int)hours);
+        calendar.set(Calendar.MINUTE,(int)minutes);
+        calendar.set(Calendar.SECOND,(int)seconds);
+        calendar.set(Calendar.MILLISECOND,(int)millis);
+
+        /*Log.d("parseDate","parsed: "+calendar.get(Calendar.HOUR_OF_DAY)+":"+
+                calendar.get(Calendar.MINUTE)+":"+
+                calendar.get(Calendar.SECOND)+":"+millis);
+        */
+
+        date = calendar.getTime();
+
+        return date;
     }
 }

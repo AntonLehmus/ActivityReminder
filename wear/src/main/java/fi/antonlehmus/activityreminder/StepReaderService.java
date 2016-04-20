@@ -97,7 +97,7 @@ public class StepReaderService extends Service implements SensorEventListener {
     public void onDestroy (){
 
         Calendar calendar = Calendar.getInstance();
-        long currentMillis = TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY)-2);
+        long currentMillis = TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY));
         long curMillis = getCurrentMillis(calendar);
 
         /*
