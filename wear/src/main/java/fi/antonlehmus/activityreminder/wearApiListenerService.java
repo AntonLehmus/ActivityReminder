@@ -35,6 +35,7 @@ public class wearApiListenerService extends WearableListenerService
     public static final String SILENT_STOP_KEY = "silent_stop";
     public static final String STEP_TRIGGER_KEY = "steps_trigger";
     public static final String REMIND_INTERVAL_KEY = "remind_interval";
+    public static final String NOTIFICATION_PRIORITY_KEY = "notification_priority";
 
 
     private static final String TAG = "wearApiListenerService";
@@ -49,6 +50,7 @@ public class wearApiListenerService extends WearableListenerService
     private static long silent_stop ;
     private static int remind_interval;
     private static int step_trigger;
+    private static int notification_priority;
 
     @Override
     public void onCreate() {
@@ -107,6 +109,7 @@ public class wearApiListenerService extends WearableListenerService
                     silent_stop = dataMap.getLong(SILENT_STOP_KEY);
                     remind_interval = dataMap.getInt(REMIND_INTERVAL_KEY);
                     step_trigger = dataMap.getInt(STEP_TRIGGER_KEY);
+                    notification_priority = dataMap.getInt(NOTIFICATION_PRIORITY_KEY);
 
                     /*
                     Log.d(TAG,"resume on reboot:"+resumeOnReboot);
@@ -124,6 +127,7 @@ public class wearApiListenerService extends WearableListenerService
                     editor.putLong(SILENT_STOP_KEY, silent_stop);
                     editor.putInt(REMIND_INTERVAL_KEY, remind_interval);
                     editor.putInt(STEP_TRIGGER_KEY, step_trigger);
+                    editor.putInt(NOTIFICATION_PRIORITY_KEY, notification_priority);
                     editor.apply();
 
 

@@ -64,8 +64,15 @@ public class SettingsActivity extends AppCompatActivity implements
     private static final String SILENT_STOP_KEY = "silent_stop";
     private static final String STEP_TRIGGER_KEY = "steps_trigger";
     private static final String REMIND_INTERVAL_KEY = "remind_interval";
+    private static final String NOTIFICATION_PRIORITY_KEY = "notification_priority";
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
+    private static boolean resumeOnReboot;
+    private static long silent_start;
+    private static long silent_stop ;
+    private static int remind_interval;
+    private static int step_trigger;
+    private static int notification_priority;
 
     private GoogleApiClient mGoogleApiClient;
     private boolean mResolvingError;
@@ -168,12 +175,14 @@ public class SettingsActivity extends AppCompatActivity implements
         @Override
         public void run() {
 
+            //read preferences
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplication());
-            boolean resumeOnReboot = sharedPref.getBoolean(getString(R.string.key_resume_on_boot), true);
-            long silent_start = sharedPref.getLong(getString(R.string.key_silent_start), 72000000);
-            long silent_stop = sharedPref.getLong(getString(R.string.key_silent_stop), 28800000);
-            int remind_interval = Integer.valueOf(sharedPref.getString(getString(R.string.key_remind_interval), "60"));
-            int step_trigger = Integer.valueOf(sharedPref.getString(getString(R.string.key_step_trigger), "15"));
+            resumeOnReboot = sharedPref.getBoolean(getString(R.string.key_resume_on_boot), true);
+            silent_start = sharedPref.getLong(getString(R.string.key_silent_start), 72000000);
+            silent_stop = sharedPref.getLong(getString(R.string.key_silent_stop), 28800000);
+            remind_interval = Integer.valueOf(sharedPref.getString(getString(R.string.key_remind_interval), "60"));
+            step_trigger = Integer.valueOf(sharedPref.getString(getString(R.string.key_step_trigger), "15"));
+            notification_priority = Integer.valueOf(sharedPref.getString(getString(R.string.key_notification_priority), "1"));
 
 
             //Log.d(TAG, "\n");
@@ -183,13 +192,14 @@ public class SettingsActivity extends AppCompatActivity implements
             //Log.d(TAG, "remind interval:" + remind_interval);
             //Log.d(TAG, "step trigger:" + step_trigger);
 
-
+            //send preferences to wear
             PutDataMapRequest putDataMapRequest = PutDataMapRequest.create(CONFIG_PATH);
             putDataMapRequest.getDataMap().putBoolean(REBOOT_KEY, resumeOnReboot);
             putDataMapRequest.getDataMap().putLong(SILENT_START_KEY, silent_start);
             putDataMapRequest.getDataMap().putLong(SILENT_STOP_KEY, silent_stop);
             putDataMapRequest.getDataMap().putInt(REMIND_INTERVAL_KEY, remind_interval);
             putDataMapRequest.getDataMap().putInt(STEP_TRIGGER_KEY, step_trigger);
+            putDataMapRequest.getDataMap().putInt(NOTIFICATION_PRIORITY_KEY, notification_priority);
 
             PutDataRequest request = putDataMapRequest.asPutDataRequest();
             request.setUrgent();

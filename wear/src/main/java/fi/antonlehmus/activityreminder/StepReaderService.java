@@ -170,7 +170,7 @@ public class StepReaderService extends Service implements SensorEventListener {
             notifyUser();
         }
 
-        Log.d(LOG_TAG,"New cycle started!");
+        //Log.d(LOG_TAG,"New cycle started!");
     }
 
     private void notifyUser(){
@@ -188,7 +188,7 @@ public class StepReaderService extends Service implements SensorEventListener {
            timeToNextAlarm = TimeUnit.MINUTES.toMillis(interval);
         }
 
-        Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes ");
+        //Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes ");
 
         scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), timeToNextAlarm, scheduledIntent);
     }

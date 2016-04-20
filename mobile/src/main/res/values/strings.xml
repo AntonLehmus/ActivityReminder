@@ -26,4 +26,7 @@
     <string name="resume_on_reboot_main_title">Reboot</string>
     <string name="remind_interval_main_title">Reminds</string>
     <string name="steps_main_title">Steps</string>
+    <string name="notification_priority_main_title">Notification priority</string>
+    <string name="notification_priority_default_value">2</string>
+    <string name="key_notification_priority">notification_priority</string>
 </resources>

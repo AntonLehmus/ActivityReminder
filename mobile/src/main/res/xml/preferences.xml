@@ -50,4 +50,16 @@
             android:maxLength="5"
             />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/notification_priority_main_title">
+        <ListPreference
+            android:key="@string/key_notification_priority"
+            android:title="@string/notification_priority_main_title"
+            android:dialogTitle=""
+            android:entries="@array/priority_names"
+            android:entryValues="@array/priority_values"
+            android:defaultValue="@string/notification_priority_default_value"
+            android:persistent="true"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>
