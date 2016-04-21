@@ -114,11 +114,12 @@ public class StepReaderService extends Service implements SensorEventListener {
         //Log.d(LOG_TAG,"current hour: "+((currentMillis)*0.000000277778));
 
 
+
         //silent hours
         if( currentMillis > silent_start){
             //Log.d(LOG_TAG,"it's past silent hours:"+((currentMillis )*0.000000277778+">"+(silent_start)*0.000000277778));
             //set next alarm at end of silent hours
-            scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis(),getTimeToSilentStop(), scheduledIntent);
+            scheduler.setExact(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis()+getTimeToSilentStop(), scheduledIntent);
         }
         else if(steps-oldSteps > step_trigger || time_since_cycle_start > remind_interval_millis){
             setAlarm(remind_interval);
@@ -165,7 +166,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         editor.putLong(CYCLE_START_TIME, System.currentTimeMillis());
         editor.apply();
 
-        if((steps-oldSteps) < DEFAULT_STEP_COUNT_TRIGGER){
+        if((steps-oldSteps) < DEFAULT_STEP_COUNT_TRIGGER && (steps-oldSteps)>0){
             //user did not reach his/hers goal
             notifyUser();
         }
