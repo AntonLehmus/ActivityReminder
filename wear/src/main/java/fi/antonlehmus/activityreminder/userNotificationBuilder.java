@@ -48,32 +48,14 @@ public class userNotificationBuilder extends IntentService {
                         .build()
                 ;
 
-        //mBuilder.build();
-
-
-
 
         // Sets an ID for the notification
         int mNotificationId = 931;
 
-        // Set the default notification option
-        // DEFAULT_SOUND : Make sound
-        // DEFAULT_VIBRATE : Vibrate
-        // DEFAULT_LIGHTS : Use the default light notification
-        // DEFAULT_ALL  : All of the above
-        //mBuilder.setDefaults(Notification.DEFAULT_ALL);
-
 
         // Gets a NotificationManager which is used to notify the user of the background event
-        //NotificationManager mNotifyMgr =
-        //        (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationManagerCompat notificationManager =
                 NotificationManagerCompat.from(this);
-
-
-
-        // Builds the notification and issues it.
-        //mNotifyMgr.notify(mNotificationId, mBuilder.build());
 
         // Issue the notification with notification manager.
         notificationManager.notify(mNotificationId,notif);

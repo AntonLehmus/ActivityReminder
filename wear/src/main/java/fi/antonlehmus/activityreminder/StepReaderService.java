@@ -13,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -122,11 +123,11 @@ public class StepReaderService extends Service implements SensorEventListener {
             scheduler.setExact(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis()+getTimeToSilentStop(), scheduledIntent);
         }
         else if(steps-oldSteps > step_trigger || time_since_cycle_start > remind_interval_millis){
-            setAlarm(remind_interval);
+            setAlarm(remind_interval, true);
             startNewCycle();
         }
         else{
-            setAlarm(check_interval);
+            setAlarm(check_interval,false);
         }
 
         sensorManager.unregisterListener(this);
@@ -180,7 +181,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         sendBroadcast(notifyIntent);
     }
     
-    private void setAlarm(int interval){
+    private void setAlarm(int interval, boolean exact){
         long timeToNextAlarm = interval;
         if(timeToNextAlarm==0) {
            timeToNextAlarm=AlarmManager.INTERVAL_HOUR;
@@ -191,7 +192,14 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         //Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes ");
 
-        scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), timeToNextAlarm, scheduledIntent);
+        if(exact){
+            scheduler.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime()+timeToNextAlarm, scheduledIntent);
+        }
+        else {
+            scheduler.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime(), timeToNextAlarm, scheduledIntent);
+        }
     }
 
     //returns milliseconds of calendar object from start of the day
