@@ -28,7 +28,7 @@ public class bootRestarter extends BroadcastReceiver {
 
                 scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), MainActivity.DEFAULT_INTERVAL * 2, scheduledIntent);
 
-                Log.d("bootRestarter", "Restarted StepReaderService");
+                //Log.d("bootRestarter", "Restarted StepReaderService");
             }
         }
     }

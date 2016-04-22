@@ -25,10 +25,10 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     public static final int REQUEST_CODE = 931;
 
-    private static final String LOG_TAG ="StepReaderService";
-    private static final String SAVED_STEPS ="saved_steps";
-    private static final String PERSISTENT_STEPS = "persistent_steps" ;
-    private static final String CYCLE_START_TIME = "cycle_start_time" ;
+    public static final String LOG_TAG ="StepReaderService";
+    public static final String SAVED_STEPS ="saved_steps";
+    public static final String PERSISTENT_STEPS = "persistent_steps" ;
+    public static final String CYCLE_START_TIME = "cycle_start_time" ;
     private static final int DEFAULT_STEP_COUNT_TRIGGER = 15;
     private static final int DEFAULT_INTERVAL = 20;//15-20min vaikutti hyvältä
     private static final int DEFAULT_SILENT_START = 20;
@@ -67,6 +67,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         silent_stop = sharedPrefUsr.getLong(wearApiListenerService.SILENT_STOP_KEY,DEFAULT_SILENT_STOP);
         remind_interval = sharedPrefUsr.getInt(wearApiListenerService.REMIND_INTERVAL_KEY,DEFAULT_INTERVAL);
         step_trigger = sharedPrefUsr.getInt(wearApiListenerService.STEP_TRIGGER_KEY,DEFAULT_STEP_COUNT_TRIGGER);
+
 
         //adapt check_interval based on remind_interval
         check_interval = remind_interval/4;
@@ -107,15 +108,13 @@ public class StepReaderService extends Service implements SensorEventListener {
         long currentMillis = getCurrentMillis(calendar);
 
 
-        Log.d(LOG_TAG, "total steps " + steps);
-        Log.d(LOG_TAG, "old steps " + oldSteps);
-        Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
-        Log.d(LOG_TAG, "minutes left in this cycle = " + (remind_interval_millis - time_since_cycle_start )/60000);
+        //Log.d(LOG_TAG, "total steps " + steps);
+        //Log.d(LOG_TAG, "old steps " + oldSteps);
+        //Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
+        //Log.d(LOG_TAG, "minutes left in this cycle = " + (remind_interval_millis - time_since_cycle_start )/60000);
         //Log.d(LOG_TAG,"silent start hour: "+((silent_start)*0.000000277778));
         //Log.d(LOG_TAG,"silent stop hour: "+((silent_stop)*0.000000277778));
         //Log.d(LOG_TAG,"current hour: "+((currentMillis)*0.000000277778));
-
-
 
         //silent hours
         if( currentMillis > silent_start){
@@ -123,7 +122,7 @@ public class StepReaderService extends Service implements SensorEventListener {
             //set next alarm at end of silent hours
             scheduler.setExact(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis()+getTimeToSilentStop(), scheduledIntent);
         }
-        else if(steps-oldSteps > step_trigger || time_since_cycle_start > remind_interval_millis){
+        else if(steps-oldSteps > step_trigger){
             //exact alarm
             setAlarm(remind_interval, true);
             startNewCycle();
@@ -131,6 +130,11 @@ public class StepReaderService extends Service implements SensorEventListener {
         else{
             //inexact alarm
             setAlarm(check_interval,false);
+
+            //cycle ended -> start new one
+            if(time_since_cycle_start > remind_interval_millis){
+                startNewCycle();
+            }
         }
         sensorManager.unregisterListener(this);
     }
@@ -148,9 +152,8 @@ public class StepReaderService extends Service implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         // grab the values off the main thread
-        Log.d(LOG_TAG,"got sensor event");
+        //Log.d(LOG_TAG,"got sensor event");
         new SensorEventLoggerTask().execute(event);
-        //stopSelf();
     }
 
     private class SensorEventLoggerTask extends AsyncTask<SensorEvent, Void, Float> {
@@ -162,7 +165,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         }
         @Override
         protected void onPostExecute (Float result){
-            Log.d(LOG_TAG,"sensor event saved");
+            //Log.d(LOG_TAG,"sensor event saved");
             stopSelf();
         }
     }
@@ -180,7 +183,7 @@ public class StepReaderService extends Service implements SensorEventListener {
             notifyUser();
         }
 
-        Log.d(LOG_TAG,"New cycle started!");
+        //Log.d(LOG_TAG,"New cycle started!");
     }
 
     private void notifyUser(){
@@ -211,7 +214,7 @@ public class StepReaderService extends Service implements SensorEventListener {
                     SystemClock.elapsedRealtime(), timeToNextAlarm, scheduledIntent);
         }
 
-        Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
+        //Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
     }
 
     //returns milliseconds of calendar object from start of the day
