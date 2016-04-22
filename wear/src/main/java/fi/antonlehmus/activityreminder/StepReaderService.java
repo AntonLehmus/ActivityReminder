@@ -111,10 +111,10 @@ public class StepReaderService extends Service implements SensorEventListener {
         long currentMillis = getCurrentMillis(calendar);
 
 
-        Log.d(LOG_TAG, "total steps " + steps);
-        Log.d(LOG_TAG, "old steps " + oldSteps);
-        Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
-        Log.d(LOG_TAG, "minutes left in this cycle = " + (remind_interval_millis - time_since_cycle_start )/60000);
+        //Log.d(LOG_TAG, "total steps " + steps);
+        //Log.d(LOG_TAG, "old steps " + oldSteps);
+        //Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
+        //Log.d(LOG_TAG, "minutes left in this cycle = " + (remind_interval_millis - time_since_cycle_start )/60000);
         //Log.d(LOG_TAG,"silent start hour: "+((silent_start)*0.000000277778));
         //Log.d(LOG_TAG,"silent stop hour: "+((silent_stop)*0.000000277778));
         //Log.d(LOG_TAG,"current hour: "+((currentMillis)*0.000000277778));
@@ -128,7 +128,7 @@ public class StepReaderService extends Service implements SensorEventListener {
             scheduler.setExact(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis()+getTimeToSilentStop(), scheduledIntent);
         }
         else if(first_run){
-            Log.d(LOG_TAG, "First run_____");
+            //Log.d(LOG_TAG, "First run_____");
             startNewCycle();
             SharedPreferences sharedPref = getSharedPreferences(StepReaderService.PERSISTENT_STEPS, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -162,7 +162,7 @@ public class StepReaderService extends Service implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         // grab the values off the main thread
-        Log.d(LOG_TAG,"got sensor event");
+        //Log.d(LOG_TAG,"got sensor event");
         new SensorEventLoggerTask().execute(event);
     }
 
@@ -175,7 +175,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         }
         @Override
         protected void onPostExecute (Float result){
-            Log.d(LOG_TAG,"sensor event saved");
+            //Log.d(LOG_TAG,"sensor event saved");
             stopSelf();
         }
     }
@@ -193,7 +193,7 @@ public class StepReaderService extends Service implements SensorEventListener {
             notifyUser();
         }
 
-        Log.d(LOG_TAG,"New cycle started!");
+        //Log.d(LOG_TAG,"New cycle started!");
     }
 
     private void notifyUser(){
@@ -224,7 +224,7 @@ public class StepReaderService extends Service implements SensorEventListener {
                     SystemClock.elapsedRealtime(), timeToNextAlarm, scheduledIntent);
         }
 
-        Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
+        //Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
     }
 
     //returns milliseconds of calendar object from start of the day

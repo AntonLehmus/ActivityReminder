@@ -25,7 +25,7 @@ public class bootRestarter extends BroadcastReceiver {
                 Intent initializerIntent = new Intent(context, StepReaderInitializer.class);
                 context.startService(initializerIntent);
 
-                Log.d("bootRestarter", "Restarted StepReaderService");
+                //Log.d("bootRestarter", "Restarted StepReaderService");
             }
         }
     }

@@ -19,7 +19,7 @@ public class StepReaderInitializer extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        Log.d(TAG,"initializing....");
+        //Log.d(TAG,"initializing....");
 
         SharedPreferences sharedPref = getSharedPreferences(StepReaderService.PERSISTENT_STEPS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -32,7 +32,7 @@ public class StepReaderInitializer extends IntentService {
 
     @Override
     public void onDestroy (){
-        Log.d(TAG,"starting StepReaderService");
+        //Log.d(TAG,"starting StepReaderService");
 
         Intent initializerIntent = new Intent(getApplicationContext(), StepReaderService.class);
         startService(initializerIntent);
