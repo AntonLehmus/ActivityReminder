@@ -75,6 +75,13 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".StepReaderInitializer"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="fi.antonlehmus.activityreminde.StepReaderInitializer" />
+            </intent-filter>
+        </service>
 
     </application>
 

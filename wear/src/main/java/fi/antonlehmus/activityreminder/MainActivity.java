@@ -2,10 +2,8 @@ package fi.antonlehmus.activityreminder;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.wearable.activity.ConfirmationActivity;
 import android.support.wearable.view.WatchViewStub;
@@ -55,12 +53,10 @@ public class MainActivity extends Activity  {
         }
 
         if(!alarmSet) {
-            //start repeating StepReaderService
-            AlarmManager scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(getApplicationContext(), StepReaderService.class);
-            PendingIntent scheduledIntent = PendingIntent.getService(getApplicationContext(), StepReaderService.REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-            scheduler.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), DEFAULT_INTERVAL, scheduledIntent);
+            //initialize and start StepReaderService
+            Intent initializerIntent = new Intent(this, StepReaderInitializer.class);
+            startService(initializerIntent);
 
             alarmSet = true;
 
