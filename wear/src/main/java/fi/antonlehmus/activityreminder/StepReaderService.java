@@ -55,6 +55,7 @@ public class StepReaderService extends Service implements SensorEventListener {
     private static int remind_interval;
     private static int step_trigger;
     private static long remind_interval_millis;
+    private static long time_left_in_cycle;
     private static boolean first_run;
 
     private int check_interval;
@@ -71,12 +72,6 @@ public class StepReaderService extends Service implements SensorEventListener {
         step_trigger = sharedPrefUsr.getInt(wearApiListenerService.STEP_TRIGGER_KEY,DEFAULT_STEP_COUNT_TRIGGER);
 
 
-        //adapt check_interval based on remind_interval
-        check_interval = remind_interval/4;
-        if(check_interval<1){
-            check_interval=1;
-        }
-
         remind_interval_millis = TimeUnit.MINUTES.toMillis(remind_interval);
 
         //read steps from last time and cycle running time
@@ -86,8 +81,6 @@ public class StepReaderService extends Service implements SensorEventListener {
         first_run = sharedPref.getBoolean(FIRST_RUN,false);
         time_since_cycle_start = System.currentTimeMillis()-last_cycle_time;
 
-
-        //Log.d(LOG_TAG,"cycle has been running "+(time_since_cycle_start/60000)+" minutes");
 
         //set AlarmManager
         scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -99,6 +92,16 @@ public class StepReaderService extends Service implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+
+        //adapt check_interval based on remind_interval and remaining time in cycle
+        check_interval = remind_interval/4;
+        time_left_in_cycle = TimeUnit.MILLISECONDS.toMinutes((remind_interval_millis - time_since_cycle_start));
+        if(check_interval > time_left_in_cycle){
+            check_interval = (int)time_left_in_cycle;
+        }
+        if(check_interval<1){
+            check_interval=1;
+        }
 
         return START_STICKY;
     }
@@ -113,8 +116,8 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         //Log.d(LOG_TAG, "total steps " + steps);
         //Log.d(LOG_TAG, "old steps " + oldSteps);
-        //Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
-        //Log.d(LOG_TAG, "minutes left in this cycle = " + (remind_interval_millis - time_since_cycle_start )/60000);
+        Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
+        Log.d(LOG_TAG, "minutes left in this cycle = "+time_left_in_cycle);
         //Log.d(LOG_TAG,"silent start hour: "+((silent_start)*0.000000277778));
         //Log.d(LOG_TAG,"silent stop hour: "+((silent_stop)*0.000000277778));
         //Log.d(LOG_TAG,"current hour: "+((currentMillis)*0.000000277778));
@@ -124,8 +127,11 @@ public class StepReaderService extends Service implements SensorEventListener {
         //silent hours
         if( currentMillis > silent_start){
             //Log.d(LOG_TAG,"it's past silent hours:"+((currentMillis )*0.000000277778+">"+(silent_start)*0.000000277778));
-            //set next alarm at end of silent hours
-            scheduler.setExact(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis()+getTimeToSilentStop(), scheduledIntent);
+            //set next run at end of silent hours
+            Intent initializerHelper = new Intent(getApplicationContext(), StepReaderInitializer.class);
+            PendingIntent scheduledInitializerIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE,
+                    initializerHelper, PendingIntent.FLAG_CANCEL_CURRENT);
+            scheduler.setExact(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis()+getTimeToSilentStop(), scheduledInitializerIntent);
         }
         else if(first_run){
             //Log.d(LOG_TAG, "First run_____");
@@ -135,9 +141,10 @@ public class StepReaderService extends Service implements SensorEventListener {
             editor.putBoolean(StepReaderService.FIRST_RUN,false);
             editor.apply();
 
+            //one minute inexact alarm
             setAlarm(1,false);
         }
-        else if(steps-oldSteps > step_trigger || time_since_cycle_start > remind_interval_millis){
+        else if(steps-oldSteps > step_trigger){
             //exact alarm
             setAlarm(remind_interval, true);
             startNewCycle();
@@ -145,6 +152,9 @@ public class StepReaderService extends Service implements SensorEventListener {
         else{
             //inexact alarm
             setAlarm(check_interval,false);
+            if(time_since_cycle_start > remind_interval_millis){
+                startNewCycle();
+            }
         }
         sensorManager.unregisterListener(this);
     }
@@ -190,10 +200,11 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         if((steps-oldSteps) < DEFAULT_STEP_COUNT_TRIGGER && !first_run){
             //user did not reach his/hers goal
+            Log.d(LOG_TAG,"notifying user");
             notifyUser();
         }
 
-        //Log.d(LOG_TAG,"New cycle started!");
+        Log.d(LOG_TAG,"New cycle started!");
     }
 
     private void notifyUser(){
@@ -224,7 +235,7 @@ public class StepReaderService extends Service implements SensorEventListener {
                     SystemClock.elapsedRealtime(), timeToNextAlarm, scheduledIntent);
         }
 
-        //Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
+        Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
     }
 
     //returns milliseconds of calendar object from start of the day
