@@ -116,8 +116,8 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         //Log.d(LOG_TAG, "total steps " + steps);
         //Log.d(LOG_TAG, "old steps " + oldSteps);
-        //Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
-        //Log.d(LOG_TAG, "minutes left in this cycle = "+time_left_in_cycle);
+        Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
+        Log.d(LOG_TAG, "minutes left in this cycle = "+time_left_in_cycle);
         //Log.d(LOG_TAG,"silent start hour: "+((silent_start)*0.000000277778));
         //Log.d(LOG_TAG,"silent stop hour: "+((silent_stop)*0.000000277778));
         //Log.d(LOG_TAG,"current hour: "+((currentMillis)*0.000000277778));
@@ -152,7 +152,7 @@ public class StepReaderService extends Service implements SensorEventListener {
         else{
             //inexact alarm
             setAlarm(check_interval,false);
-            if(time_since_cycle_start > remind_interval_millis){
+            if(time_left_in_cycle <= 0){
                 startNewCycle();
             }
         }
@@ -200,11 +200,11 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         if((steps-oldSteps) < DEFAULT_STEP_COUNT_TRIGGER && !first_run){
             //user did not reach his/hers goal
-            //Log.d(LOG_TAG,"notifying user");
+            Log.d(LOG_TAG,"notifying user");
             notifyUser();
         }
 
-        //Log.d(LOG_TAG,"New cycle started!");
+        Log.d(LOG_TAG,"New cycle started!");
     }
 
     private void notifyUser(){
