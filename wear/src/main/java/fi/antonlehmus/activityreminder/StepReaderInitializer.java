@@ -32,9 +32,9 @@ public class StepReaderInitializer extends IntentService {
 
     @Override
     public void onDestroy (){
-        //Log.d(TAG,"starting StepReaderService");
+        Log.d(TAG,"calling StepReaderStarter");
 
-        Intent initializerIntent = new Intent(getApplicationContext(), StepReaderService.class);
+        Intent initializerIntent = new Intent(getApplicationContext(), StepReaderStarter.class);
         startService(initializerIntent);
 
         super.onDestroy();

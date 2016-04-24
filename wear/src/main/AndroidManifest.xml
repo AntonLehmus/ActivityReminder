@@ -54,6 +54,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".StepReaderStarter"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="fi.antonlehmus.activityreminde.StepReaderStarter" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".StepReaderService"
             android:exported="false">

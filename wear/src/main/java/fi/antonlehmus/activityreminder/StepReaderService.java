@@ -13,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -57,12 +58,18 @@ public class StepReaderService extends Service implements SensorEventListener {
     private static long remind_interval_millis;
     private static long time_left_in_cycle;
     private static boolean first_run;
+    private static PowerManager powerManager;
+    private static PowerManager.WakeLock wakeLock;
+    private static Intent callingIntent;
+
 
     private int check_interval;
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        callingIntent = intent;
 
         //read user configuration
         SharedPreferences sharedPrefUsr =  getSharedPreferences(wearApiListenerService.USR_CONFIG, Context.MODE_PRIVATE);
@@ -71,6 +78,13 @@ public class StepReaderService extends Service implements SensorEventListener {
         remind_interval = sharedPrefUsr.getInt(wearApiListenerService.REMIND_INTERVAL_KEY,DEFAULT_INTERVAL);
         step_trigger = sharedPrefUsr.getInt(wearApiListenerService.STEP_TRIGGER_KEY,DEFAULT_STEP_COUNT_TRIGGER);
 
+        //midnight as 24:00 instead of 00:00
+        if(silent_stop == 0){
+            silent_stop = 86400000;
+        }
+        if(silent_start == 0){
+            silent_start = 86400000;
+        }
 
         remind_interval_millis = TimeUnit.MINUTES.toMillis(remind_interval);
 
@@ -84,7 +98,7 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         //set AlarmManager
         scheduler = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        intentHelper = new Intent(getApplicationContext(), StepReaderService.class);
+        intentHelper = new Intent(getApplicationContext(), StepReaderStarter.class);
         scheduledIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE,
                 intentHelper, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -126,7 +140,7 @@ public class StepReaderService extends Service implements SensorEventListener {
 
         //silent hours
         if( currentMillis > silent_start){
-            //Log.d(LOG_TAG,"it's past silent hours:"+((currentMillis )*0.000000277778+">"+(silent_start)*0.000000277778));
+            Log.d(LOG_TAG,"it's past silent hours:"+((currentMillis )*0.000000277778+">"+(silent_start)*0.000000277778));
             //set next run at end of silent hours
             Intent initializerHelper = new Intent(getApplicationContext(), StepReaderInitializer.class);
             PendingIntent scheduledInitializerIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE,
@@ -157,6 +171,8 @@ public class StepReaderService extends Service implements SensorEventListener {
             }
         }
         sensorManager.unregisterListener(this);
+        //release wake lock
+        notifyUser.completeWakefulIntent(callingIntent);
     }
 
     @Override
@@ -235,7 +251,7 @@ public class StepReaderService extends Service implements SensorEventListener {
                     SystemClock.elapsedRealtime(), timeToNextAlarm, scheduledIntent);
         }
 
-        //Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
+        Log.d(LOG_TAG, "next start after "+(timeToNextAlarm/60000)+" minutes as "+alarm_type);
     }
 
     //returns milliseconds of calendar object from start of the day
