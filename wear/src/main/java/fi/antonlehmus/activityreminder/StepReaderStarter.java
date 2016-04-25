@@ -12,8 +12,8 @@ public class StepReaderStarter extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
+        //Log.d(TAG,"starting StepReaderService");
         Intent service = new Intent(context, StepReaderService.class);
-        Log.d(TAG,"starting StepReaderService");
         startWakefulService(context, service);
     }
 }

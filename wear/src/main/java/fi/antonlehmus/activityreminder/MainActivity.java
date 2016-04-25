@@ -14,8 +14,6 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity  {
 
-    public static final long DEFAULT_INTERVAL = 60000; //1 minute in milliseconds
-
     private Button mButton;
 
 
@@ -33,6 +31,10 @@ public class MainActivity extends Activity  {
             }
         });
 
+        if(StepReaderService.getScheduledIntent() != null){
+            alarmSet=true;
+        }
+
     }
 
 
@@ -47,10 +49,6 @@ public class MainActivity extends Activity  {
 
 
     public void startReminder(View view){
-
-        if(StepReaderService.getScheduledIntent() != null){
-            alarmSet=true;
-        }
 
         if(!alarmSet) {
 
