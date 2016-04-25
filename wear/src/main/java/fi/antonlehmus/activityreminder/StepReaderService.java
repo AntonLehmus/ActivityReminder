@@ -157,12 +157,12 @@ public class StepReaderService extends Service implements SensorEventListener {
             setAlarm(TimeUnit.MINUTES.toMillis(remind_interval), true);
             startNewCycle();
         }
-        else if(time_left_in_cycle <= 0) {
+        else if(time_left_in_cycle <= 200) {
             startNewCycle();
             //inexact alarm
             setAlarm(TimeUnit.MINUTES.toMillis(check_interval), false);
         }
-        else if(time_left_in_cycle < check_interval && !first_run){
+        else if(TimeUnit.MILLISECONDS.toMinutes(time_left_in_cycle) < check_interval && !first_run){
             //exact alarm at the end of the cycle to prevent time shifts
             setAlarm(time_left_in_cycle,true);
         }
@@ -251,7 +251,7 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     //returns milliseconds of calendar object from start of the day
     private long getCurrentMillis(Calendar calendar){
-        long sum = 0;
+        long sum;
 
         sum=TimeUnit.HOURS.toMillis(calendar.get(Calendar.HOUR_OF_DAY))+
                 TimeUnit.MINUTES.toMillis(calendar.get(Calendar.MINUTE))+
@@ -261,7 +261,7 @@ public class StepReaderService extends Service implements SensorEventListener {
     }
 
     private long getTimeToSilentStop(){
-        long time = 0;
+        long time;
         final long dayInMillis = 86400000; //24 hours in milliseconds
         Calendar calendar = Calendar.getInstance();
         long now = getCurrentMillis(calendar);
