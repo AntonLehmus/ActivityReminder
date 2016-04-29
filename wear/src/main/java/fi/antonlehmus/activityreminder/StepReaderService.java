@@ -115,16 +115,13 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     @Override
     public void onDestroy (){
-
-        Calendar calendar = Calendar.getInstance();
-        //current milliseconds from start of the day
-        long currentMillis = getCurrentMillis(calendar);
         time_left_in_cycle = remind_interval_millis - time_since_cycle_start;
 
 
         //Log.d(LOG_TAG, "total steps " + steps);
         //Log.d(LOG_TAG, "old steps " + oldSteps);
         Log.d(LOG_TAG, "steps-oldSteps=" + (steps - oldSteps));
+        Log.d(LOG_TAG, "step trigger = " +step_trigger);
         Log.d(LOG_TAG, "time left in this cycle = "+TimeUnit.MILLISECONDS.toMinutes(time_left_in_cycle)+" minutes ("+time_left_in_cycle+")ms");
         //Log.d(LOG_TAG,"silent start hour: "+((silent_start)*0.000000277778));
         //Log.d(LOG_TAG,"silent stop hour: "+((silent_stop)*0.000000277778));
@@ -133,8 +130,7 @@ public class StepReaderService extends Service implements SensorEventListener {
 
 
         //silent hours
-        if( currentMillis > silent_start){
-            Log.d(LOG_TAG,"it's past silent hours:"+(TimeUnit.MILLISECONDS.toHours(currentMillis )+">"+TimeUnit.MILLISECONDS.toHours(silent_start)));
+        if(isSilentHours()){
             //set next run at end of silent hours
             Intent initializerHelper = new Intent(getApplicationContext(), StepReaderInitializer.class);
             PendingIntent scheduledInitializerIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE,
@@ -152,7 +148,7 @@ public class StepReaderService extends Service implements SensorEventListener {
             //one minute inexact alarm
             setAlarm(TimeUnit.MINUTES.toMillis(1),false);
         }
-        else if(steps-oldSteps > step_trigger){
+        else if((steps-oldSteps) > step_trigger){
             //exact alarm
             setAlarm(TimeUnit.MINUTES.toMillis(remind_interval), true);
             startNewCycle();
@@ -279,6 +275,25 @@ public class StepReaderService extends Service implements SensorEventListener {
 
     public static PendingIntent getScheduledIntent(){
         return scheduledIntent;
+    }
+
+    private boolean isSilentHours(){
+        Calendar calendar = Calendar.getInstance();
+        //current milliseconds from start of the day
+        long currentMillis = getCurrentMillis(calendar);
+
+        //silent hours stop on the next day
+        if(silent_stop<silent_start){
+           if(currentMillis>silent_start){
+               return true;
+           }
+        }
+        else{//silent hours stop on the same day
+            if(currentMillis> silent_start && currentMillis < silent_stop){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
